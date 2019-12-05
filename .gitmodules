@@ -1,0 +1,9 @@
+[submodule "src/sparsepp"]
+	path = src/sparsepp
+	url = https://github.com/greg7mdp/sparsepp
+[submodule "src/argagg"]
+	path = src/argagg
+	url = https://github.com/vietjtnguyen/argagg
+[submodule "src/bwa"]
+	path = src/bwa
+	url = https://github.com/lh3/bwa
