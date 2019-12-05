@@ -54,7 +54,7 @@ class ProgCollapse : public ProgBase {
         }
 
         std::string usage() const {
-            return "scmap collapse -u <umi_map> -r <genome.fa> -i <transcript index prefix> -o <out prefix> -b <barcodes> <tmp bam prefix> <tmp bam prefix 2> ... <tmp bam prefix N>";
+            return "scsnv collapse -u <umi_map> -r <genome.fa> -i <transcript index prefix> -o <out prefix> -b <barcodes> <tmp bam prefix> <tmp bam prefix 2> ... <tmp bam prefix N>";
         }
 
         void load();

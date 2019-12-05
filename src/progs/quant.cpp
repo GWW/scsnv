@@ -21,8 +21,8 @@ SOFTWARE.
 */
 
 #include "quant.hpp"
-#include "../scmap/quant_worker.hpp"
-#include "../scmap/reader.hpp"
+#include "../scsnv/quant_worker.hpp"
+#include "../scsnv/reader.hpp"
 
 using namespace gwsc;
 

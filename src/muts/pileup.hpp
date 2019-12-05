@@ -22,8 +22,8 @@ SOFTWARE.
 */
 
 #include "bam_genes.hpp"
-#include "../scmap/aux.hpp"
-#include "../scmap/align_aux.hpp"
+#include "../scsnv/aux.hpp"
+#include "../scsnv/align_aux.hpp"
 
 #include <thread>
 #include <list>

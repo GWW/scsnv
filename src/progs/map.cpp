@@ -1,5 +1,5 @@
 #include "map.hpp"
-#include "../scmap/map_base.hpp"
+#include "../scsnv/map_base.hpp"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "../util/misc.hpp"
@@ -42,7 +42,7 @@ argagg::parser ProgMap::parser() const {
 }
 
 std::string ProgMap::usage() const {
-    return "scmap map -i <transcript index prefix> -g <genome bwa index> -b <barcode prefix> -o <out prefix> <fastq folder 1> ... <fastq folder N>";
+    return "scsnv map -i <transcript index prefix> -g <genome bwa index> -b <barcode prefix> -o <out prefix> <fastq folder 1> ... <fastq folder N>";
 }
 
 void ProgMap::load() {
@@ -65,7 +65,7 @@ void ProgMap::load() {
             mkdir(tmp_bam_.c_str(), 0700);
         }
 
-        auto bams = glob(tmp_bam_ + "/scmap_tmp_*.bam");
+        auto bams = glob(tmp_bam_ + "/scsnv_tmp_*.bam");
         if(!bams.empty()){
             tout << "Removing " << bams.size() << " temporary bam files from " << tmp_bam_ << "\n";
             for(auto & f : bams){

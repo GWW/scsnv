@@ -17,7 +17,7 @@ argagg::parser ProgBarcodes::parser() const {
 }
 
 std::string ProgBarcodes::usage() const {
-    return "scmap count -k known_barcodes.txt -o barcodes.gz <fastq folder 1> <fastq folder 2> ...";
+    return "scsnv count -k known_barcodes.txt -o barcodes.gz <fastq folder 1> <fastq folder 2> ...";
 }
 
 void ProgBarcodes::load() {

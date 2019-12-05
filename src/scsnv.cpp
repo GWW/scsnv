@@ -23,8 +23,8 @@ SOFTWARE.
 #include <string>
 #include <iostream>
 #include <getopt.h>
-#include "scmap/build.hpp"
-#include "scmap/index.hpp"
+#include "scsnv/build.hpp"
+#include "scsnv/index.hpp"
 #include "progs/index.hpp"
 #include "progs/map.hpp"
 #include "progs/barcodes.hpp"

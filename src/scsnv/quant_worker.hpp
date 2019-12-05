@@ -22,7 +22,7 @@ SOFTWARE.
 */
 
 #include "index.hpp"
-#include "../scmap/tag_reader.hpp"
+#include "tag_reader.hpp"
 #include "../progs/map.hpp"
 #include "../sparsepp/sparsepp/spp.h"
 #include "dups.hpp"

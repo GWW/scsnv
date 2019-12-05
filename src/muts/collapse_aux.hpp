@@ -26,13 +26,13 @@ SOFTWARE.
 #include <numeric>
 #include <algorithm>
 #include <iostream>
-#include <htslib/hts.h>
-#include <htslib/sam.h>
+#include "../htslib/htslib/hts.h"
+#include "../htslib/htslib/sam.h"
 #include "../util/sequence.hpp"
 #include "../util/fasta.hpp"
 #include "../muts/bam_genes.hpp"
-#include "../scmap/aux.hpp"
-#include "../scmap/align_aux.hpp"
+#include "../scsnv/aux.hpp"
+#include "../scsnv/align_aux.hpp"
 #include <mutex>
 
 namespace gwsc {

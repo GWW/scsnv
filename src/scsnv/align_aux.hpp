@@ -28,7 +28,7 @@ SOFTWARE.
 #include <sstream>
 #include "../util/interval_tree.hpp"
 #include "../bwa/bwamem.h"
-#include <htslib/sam.h>
+#include "../htslib/htslib/sam.h"
 
 namespace gwsc {
 

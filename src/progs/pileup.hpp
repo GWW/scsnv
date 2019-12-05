@@ -68,7 +68,7 @@ class ProgPileup : public ProgBase {
         }
 
         std::string usage() const {
-            return "scmap pileup -i <transcript index prefix> -r <genome.fa> -b <barcode_counts.txt.gz> -o <output> in.bam";
+            return "scsnv pileup -i <transcript index prefix> -r <genome.fa> -b <barcode_counts.txt.gz> -o <output> in.bam";
         }
 
         void load();

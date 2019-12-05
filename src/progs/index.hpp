@@ -22,7 +22,7 @@ SOFTWARE.
 */
 
 #include "base.hpp"
-#include "../scmap/build.hpp"
+#include "../scsnv/build.hpp"
 #include <exception>
 
 namespace gwsc{
@@ -48,7 +48,7 @@ class ProgIndex : public ProgBase {
         }
 
         std::string usage() const {
-            return "scmap index -g genes.gtf -r genome.fa -l 100 out_prefix";
+            return "scsnv index -g genes.gtf -r genome.fa -l 100 out_prefix";
         }
 
         void load() {

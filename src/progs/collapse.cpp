@@ -18,8 +18,8 @@ SOFTWARE.
 */
 
 #include "collapse.hpp"
-#include "../scmap/reader.hpp"
-#include "../scmap/align_aux.hpp"
+#include "../scsnv/reader.hpp"
+#include "../scsnv/align_aux.hpp"
 #include "../util/misc.hpp"
 #include "../util/gzstream.hpp"
 #include "../sparsepp/sparsepp/spp.h"
@@ -57,7 +57,7 @@ void ProgCollapse::load() {
             std::string d = f;
             if(d.back() != '/')
                 d += '/';
-            d += "scmap_tmp_*.bam";
+            d += "scsnv_tmp_*.bam";
             auto bams = glob(d);
             std::cout << "  " << f << ": found " << bams.size() << " bam files\n";
             bam_files_.insert(bam_files_.end(), bams.begin(), bams.end());
@@ -188,6 +188,13 @@ int ProgCollapse::run_wrap_(){
 
     if(started) bout.join();
     delete rbuffer;
+
+    if(!cellranger_){
+        tout << "Deleting the temporary bam files\n";
+        for(auto & b : bam_files_){
+            unlink(b.c_str());
+        }
+    }
 
 
 

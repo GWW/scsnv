@@ -7,3 +7,6 @@
 [submodule "src/bwa"]
 	path = src/bwa
 	url = https://github.com/lh3/bwa
+[submodule "src/htslib"]
+	path = src/htslib
+	url = https://github.com/samtools/htslib

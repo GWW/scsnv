@@ -22,8 +22,8 @@ SOFTWARE.
 */
 
 #include "base.hpp"
-#include "../scmap/index.hpp"
-#include "../scmap/reader.hpp"
+#include "../scsnv/index.hpp"
+#include "../scsnv/reader.hpp"
 #include <exception>
 
 namespace gwsc{

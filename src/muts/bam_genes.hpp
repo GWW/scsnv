@@ -28,10 +28,10 @@ SOFTWARE.
 #include <iostream>
 #include <vector>
 #include "../util/misc.hpp"
-#include "../scmap/index.hpp"
+#include "../scsnv/index.hpp"
 #include "sbam_merge.hpp"
-#include <htslib/hts.h>
-#include <htslib/sam.h>
+#include "../htslib/htslib/hts.h"
+#include "../htslib/htslib/sam.h"
 #include "../util/sequence.hpp"
 #include <mutex>
 

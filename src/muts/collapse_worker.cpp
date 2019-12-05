@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <sstream>
 
-#include "../scmap/align_aux.hpp"
-#include "../scmap/aux.hpp"
+#include "../scsnv/align_aux.hpp"
+#include "../scsnv/aux.hpp"
 #include "../util/sequence.hpp"
 
 using namespace gwsc;

@@ -47,7 +47,7 @@ void SortedBamWriter::force_write() {
 
     std::sort(out_.begin(), out_.begin() + file_reads_, psort);
     std::stringstream ss;
-    ss << prefix_  << "/scmap_tmp_" << std::setw(4) << std::setfill('0') << file_number_ << ".bam";
+    ss << prefix_  << "/scsnv_tmp_" << std::setw(4) << std::setfill('0') << file_number_ << ".bam";
     std::string outf = ss.str();
 
     samFile * bam_out = sam_open(outf.c_str(), "wb");

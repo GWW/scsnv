@@ -22,8 +22,8 @@ SOFTWARE.
 */
 
 #include "base.hpp"
-#include "../scmap/build.hpp"
-#include "../scmap/index.hpp"
+#include "../scsnv/build.hpp"
+#include "../scsnv/index.hpp"
 #include <exception>
 
 namespace gwsc{
@@ -53,7 +53,7 @@ class ProgQuant : public ProgBase {
         }
 
         std::string usage()  const {
-            return "scmap quant -i <transcript index prefix> -o <out prefix> <map prefix 1> ... <map prefix N>";
+            return "scsnv quant -i <transcript index prefix> -o <out prefix> <map prefix 1> ... <map prefix N>";
         }
 
         void load() {

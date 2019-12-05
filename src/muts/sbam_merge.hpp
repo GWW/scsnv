@@ -29,8 +29,8 @@ SOFTWARE.
 #include <queue>
 #include <tuple>
 #include "../util/misc.hpp"
-#include <htslib/hts.h>
-#include <htslib/sam.h>
+#include "../htslib/htslib/hts.h"
+#include "../htslib/htslib/sam.h"
 
 namespace gwsc{
 
@@ -100,7 +100,9 @@ inline bam1_t * BamMerger::next(bam1_t * read) {
     pq_.pop();
     auto & p = files_[n->fno];
     if(read == nullptr) read = bam_init1();
-    bam_copy1(read, n->read);
+    if(bam_copy1(read, n->read) == NULL) {
+        std::cerr << "Error copying bam record\n"; exit(1);
+    }
 
     if(p.first != NULL && sam_read1(p.first, p.second, n->read) >= 0){
         total_++;

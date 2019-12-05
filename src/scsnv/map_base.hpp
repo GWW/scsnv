@@ -235,14 +235,10 @@ inline void MapBase<T>::write_output(const std::string & prefix) {
         gzclose(zout2);
     }
     if(bam_){
-        auto bams = glob(bam_tmp_ + "/scmap_tmp_*.bam");
+        auto bams = glob(bam_tmp_ + "/scsnv_tmp_*.bam");
         tout << "Wrote " << bams.size() << " sorted bam files fragments\n";
         /*
         merge_bams(bams, prefix + "_aligns.bam", write_threads_);
-        tout << "Deleting the temporary bam files\n";
-        for(auto & b : bams){
-            unlink(b.c_str());
-        }
         */
     }
     tout << "Done\n";
@@ -303,8 +299,7 @@ void MapBase<T>::prepare_bam(const std::string & prog_name, unsigned int bam_per
     }
     bh.build_header();
     std::stringstream lines;
-    std::cout << "Need to come up with a better tool name and fix PG line\n";
-    lines << "@HD\tSO:coordinate\n@PG\tID:scmap\tCL:" << prog_name << "\tVN:0.1\n";
+    lines << "@HD\tSO:coordinate\n@PG\tID:scsnv\tCL:" << prog_name << "\tVN:1.0\n";
     bh.set_text(lines.str());
     bout_.set_thread_buffer(bam_per_file, bam_per_thread);
     bout_.set_prefix(prefix);

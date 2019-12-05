@@ -22,8 +22,8 @@ SOFTWARE.
 */
 
 #include "base.hpp"
-#include "../scmap/barcodes.hpp"
-#include "../scmap/reader.hpp"
+#include "../scsnv/barcodes.hpp"
+#include "../scsnv/reader.hpp"
 #include <exception>
 #include <numeric>
 #include <fstream>

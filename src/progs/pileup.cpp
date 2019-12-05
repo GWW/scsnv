@@ -21,8 +21,8 @@ SOFTWARE.
 */
 
 #include "pileup.hpp"
-#include "../scmap/reader.hpp"
-#include "../scmap/align_aux.hpp"
+#include "../scsnv/reader.hpp"
+#include "../scsnv/align_aux.hpp"
 #include "../util/misc.hpp"
 #include "../util/gzstream.hpp"
 #include "../muts/pileup_worker.hpp"
