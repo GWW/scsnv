@@ -1,77 +1,32 @@
-```
-scmap index -g genes.gtf -r genome.fa -l 100 out_prefix
-    -g, --gtf
-        GTF file (required)
-    -r, --ref
-        Genome fasta file (required)
-    --retained-introns
-        Keep retained introns, note alignments to these will be considered exonic
-    -l, --min-length
-        Minimum Transcript Length [100]
-    -h, --help
-        shows this help message
+## scSNV
 
-```
+scSNV is an alternative to Cell Ranger + velocyto for the alignment, quantification and SNV calling of 10X Single Cell RNA-seq data.
+Example python scripts to annotate SNVs, identify barcode tags that represent cells and generate the data from the scSNV manuscript is available at http://github.com/GWW/scsnvpy/.
 
-```
-scmap count -k known_barcodes.txt -o barcodes.gz <fastq folder 1> <fastq folder 2> ...
-    -k, --known-barcodes
-        Known Barcode File
-    -o, --out
-        Barcode count output file
-    -l, --library
-        libary type (V2, V3)
-    -h, --help
-        shows this help message
-```
+scSNV requires the HDF5 C and C++ Libraries for compilation.
 
-```
-scmap map -i <transcript index prefix> -g <genome bwa index> -b <barcode prefix> -o <out prefix> <fastq folder 1> ... <fastq folder N>
-    -h, --help
-        shows this help message
-    -i, --index
-        Transcript Index
-    -g, --genome
-        Genome BWA mem Index (optional)
-    -b, --barcodes
-        Barcode count prefix
-    -t, --threads
-        Number of threads
-    -o, --output
-        Output prefix
-    --ei-ratio
-        Minimum ratio of exonic / intergenic bases to be considered a cDNA alignment (Default: 0.75)
-    -l, --library
-        libary type (V2)
-    --no-bam
-        Disable writing the sorted bam files of the countable (ie. uniquely mapped reads)
-    --bam-tmp
-        Temporary directory to store sorted bam files (Default: {out_prefix}_tmp
-    --bam-thread
-        Number of output reads to buffer for each thread (Default: 50000)
-    --bam-file
-        Number of output reads per file (Default: 5000000)
-    --bam-write
-        Number of writer threads to use when emitting sorted bam files (Default 1)
-```
+Building instructions:
 
-```
 
-scmap quant -i <transcript index prefix> -o <out prefix> <map prefix 1> ... <map prefix N>
-    -h, --help
-        shows this help message
-    -i, --index
-        Transcript Index
-    -t, --threads
-        Number of threads
-    --no-bam
-        Disable Writing data required to correct the UMI of bam files
-    -c, --count-groups
-        Gene Groups for cell quantification
-    -m, --min-molecules
-        Minimum number of barcode cDNA molecules
-    -l, --library
-        libary type (V2)
-    -o, --output
-        Output file prefix, ie. sample/summary
-```
+The scSNV is separated into 6 steps:
+
+1. [index](#indexing) -- Generating a reusable genome index
+1. [count](#count) -- Counting the barcode tags
+1. [map](#map) -- Mapping the alignment tags and correcting the barcodes
+1. [quant](#quantify) -- Deduplicating and quantifying the UMI tags
+1. [collapse](#collapse) -- Collapsing the sorted bam file fragments
+1. [pileup](#pileup) -- Piling up the collapsed bam file
+
+### Indexing
+### Count
+### Map
+### Quantify
+### Collapse
+### Pileup
+
+### Example Commands
+
+### Future Tasks
+
+1. Parallelizing the scSNV mapping step on a computational cluster:
+
