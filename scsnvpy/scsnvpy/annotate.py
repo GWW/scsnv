@@ -124,8 +124,10 @@ class SNVAnnotate(object):
         #for i, m in enumerate(self.smats):
         #    self.smats[i] = csr_matrix(m[keep])
         print(keep, keep.shape, self.smats[0].shape, self.smats[1].shape)
-        self.smats[0] = self.smats[0][keep]
-        self.smats[1] = self.smats[1][keep]
+        o1 = self.smats[0][keep]
+        o2 = self.smats[1][keep]
+        self.smats[0] = o1
+        self.smats[1] = o2
         #indptr, indices, ref, alt = align_matrices(self.smats[0], self.smats[1])
         #self.smats[0] = csr_matrix((ref,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
         #self.smats[1] = csr_matrix((alt,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
