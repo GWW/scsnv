@@ -123,7 +123,7 @@ class SNVAnnotate(object):
 
         #for i, m in enumerate(self.smats):
         #    self.smats[i] = csr_matrix(m[keep])
-        print(keep, keep.shape, self.smats[0].shape, type(self.smats[0]), self.smats[1].shape, type(self.smats[1]))
+        print(keep, keep.shape, self.smats[0].shape, self.smats[1].shape)
         self.smats[0] = self.smats[0][keep]
         self.smats[1] = self.smats[1][keep]
         #indptr, indices, ref, alt = align_matrices(self.smats[0], self.smats[1])
