@@ -184,7 +184,7 @@ class SNVAnnotate(object):
 
         self._pstrand = pstrand
         self._mstrand = mstrand
-        self._spass = spass.values
+        self._spass = spass
 
         dfo = pd.DataFrame(index=snvs.index)
         dfo['ref'] = snvs.ref
