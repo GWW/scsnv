@@ -21,6 +21,24 @@ struct CSRout{
     int32_t * alt = nullptr;
 };
 
+struct COOout{
+    COOout(){
+
+    }
+    COOout(size_t N, size_t M, int32_t * xp, int32_t * yp, int32_t * ref, int32_t * alt)
+        : N(N), M(M), xp(xp), yp(yp), ref(ref), alt(alt)
+    {
+
+    }
+    size_t N = 0;
+    size_t M = 0;
+    size_t D = 0; 
+    int32_t * xp = nullptr;
+    int32_t * yp = nullptr;
+    int32_t * ref = nullptr;
+    int32_t * alt = nullptr;
+};
+
 
 inline size_t sizeMatrices(size_t N, size_t M, int32_t * ref, int32_t * alt){
     size_t D = 0;
@@ -51,5 +69,22 @@ inline void alignMatrices(CSRout * out, int32_t * ref, int32_t * alt){
         }
     }
     o.indptr[o.N] = D;
+}
 
+inline size_t mergeDups(int32_t * m, size_t N){
+    int32_t * out = m;
+    for(int32_t * r = (m + 3); r != (m + N * 3); r+=3){
+        //std::cout << "curr = " << (r - m) << " oidx = " << (out - m) << " curr = (" << r[0] << ", " << r[1] << ", " << r[2] << ") out = (" << out[0] << ", " << out[1] << ", " << out[2] << ") ";
+        if(r[0] == out[0] && r[1] == out[1]){
+            //std::cout << " dup\n";
+            out[2] = r[2];
+        }else{
+            out+=3;
+            //std::cout << " unique\n";
+            out[0] = r[0];
+            out[1] = r[1];
+            out[2] = r[2];
+        }
+    }
+    return (out + 3) - m;
 }

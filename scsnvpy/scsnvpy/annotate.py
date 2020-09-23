@@ -23,8 +23,8 @@ import numpy as NP
 import h5py, sys
 import flammkuchen as flm
 import argparse
-from scipy.sparse import csr_matrix
-from .snvmats import align_matrices
+from scipy.sparse import csr_matrix, coo_matrix
+from .snvmats import align_matrices, merge_coo_dups
 #from .snvcmp import snv_type_names, snv_type_funcs, snv_type_shorts
 
 BMAP = {x:i for i, x in enumerate('ACGTN')}
@@ -69,6 +69,7 @@ def annotate_cmd(args):
             'strand_ref_mat':ann.smats[0], 'strand_alt_mat':ann.smats[1],
             'filtering':{'kept':(ann._ppass & ann._spass).sum(), 'total':len(ann._ppass)}
         })
+
 
 class SNVAnnotate(object):
     def __init__(self, prefix, purity, strand_purity, targets=None):
@@ -122,11 +123,12 @@ class SNVAnnotate(object):
 
         #for i, m in enumerate(self.smats):
         #    self.smats[i] = csr_matrix(m[keep])
+        print(keep)
         self.smats[0] = self.smats[0][keep]
         self.smats[1] = self.smats[1][keep]
-        indptr, indices, ref, alt = align_matrices(self.smats[0], self.smats[1])
-        self.smats[0] = csr_matrix((ref,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
-        self.smats[1] = csr_matrix((alt,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
+        #indptr, indices, ref, alt = align_matrices(self.smats[0], self.smats[1])
+        #self.smats[0] = csr_matrix((ref,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
+        #self.smats[1] = csr_matrix((alt,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
 
 
     #Check to make sure the cell counts are correct
@@ -244,46 +246,79 @@ class SNVAnnotate(object):
         strand_ref_mat = None
         strand_alt_mat = None
 
-        for strand in '+-':
-            for b in 'ACGT':
-                ref_idx = (snvs['ref'].values == b) & (snvs['strand'].values == strand)
-                alt_idx = (snvs['alt'].values == b) & (snvs['strand'].values == strand)
+        c_rmat = None
+        c_amat = None
+
+        for b1 in 'ACGT':
+            d = self._h5f[f'base_{b1}']
+            bids1, sids1, pbases1, mbases1 = map(NP.array, (d['barcode_ids'], d['snps'], d['plus'], d['minus']))
+            for b2 in 'ACGT':
+                if b1 == b2:
+                    continue
+                d = self._h5f[f'base_{b2}']
+                bids2, sids2, pbases2, mbases2 = map(NP.array, (d['barcode_ids'], d['snps'], d['plus'], d['minus']))
+                base_idx = (snvs['ref'].values == b1) & (snvs['alt'].values == b2)
+
+                for strand in '+-':
+                    strand_idx = (base_idx) & (snvs['strand'].values == strand)
+                    if ~NP.any(strand_idx):
+                        continue
+                    
+                    c1 = pbases1 if strand == '+' else mbases1
+                    c2 = pbases2 if strand == '+' else mbases2
+                    idx = NP.where(strand_idx)[0]
+                    ridx1 = NP.where(NP.in1d(sids1, idx))[0]
+                    ridx2 = NP.where(NP.in1d(sids2, idx))[0]
+
+                    rmat = NP.zeros((len(ridx1), 3), dtype='int32')
+                    rmat[:,0] = sids1[ridx1]
+                    rmat[:,1] = bids1[ridx1]
+                    rmat[:,2] = c1[ridx1]
+
+                    amat = NP.zeros((len(ridx2), 3), dtype='int32')
+                    amat[:,0] = sids2[ridx2]
+                    amat[:,1] = bids2[ridx2]
+                    amat[:,2] = c2[ridx2]
+
+                    nl = rmat.shape[0]
+                    tmp1 = NP.vstack([rmat, amat])
+                    tmp1[nl:,2] = 0
+                    tmp1 = tmp1[NP.lexsort((tmp1[:,0], tmp1[:,1]))]
+                    #print(b1, b2, strand, NP.count_nonzero(tmp1[:nl, 2]), NP.count_nonzero(tmp1[nl:, 2]))
+
+                    nl = amat.shape[0]
+                    tmp2 = NP.vstack([amat, rmat])
+                    tmp2[nl:,2] = 0
+                    tmp2 = tmp2[NP.lexsort((tmp2[:,0], tmp2[:,1]))]
+                    #print(b1, b2, strand, NP.count_nonzero(tmp2[:nl, 2]), NP.count_nonzero(tmp2[nl:, 2]))
+
+                    rmat = tmp1
+                    amat = tmp2
+
+                    if c_rmat is None:
+                        c_rmat = rmat
+                        c_amat = amat
+                    else:
+                        c_rmat = NP.vstack([c_rmat, rmat])
+                        c_amat = NP.vstack([c_amat, amat])
+
+                    #print(b1, b2, strand, NP.count_nonzero(c_rmat[:, 2]), NP.count_nonzero(c_amat[:, 2]))
+
+        c_rmat = c_rmat[NP.lexsort((c_rmat[:,2], c_rmat[:,1], c_rmat[:,0]))]
+        c_amat = c_amat[NP.lexsort((c_amat[:,2], c_amat[:,1], c_amat[:,0]))]
+
+        c_rmat = merge_coo_dups(c_rmat, len(snvs), BC)
+        c_amat = merge_coo_dups(c_amat, len(snvs), BC)
+        self.smats = [c_rmat, c_amat]
 
 
-        for b in 'ACGT':
-            d = self._h5f[f'base_{b}']
+        tb = NP.zeros(len(snvs), dtype='int')
+        sa = NP.zeros(len(snvs), dtype='int')
+        sr = NP.zeros(len(snvs), dtype='int')
 
-            bids, sids, pbases, mbases = map(NP.array, (d['barcode_ids'], d['snps'], d['plus'], d['minus']))
-
-
-            #refidx = NP.where(ref_idx)[0]
-            #altidx = NP.where(alt_idx)[0]
-
-            """
-
-            paidx = NP.where(plus_idx & alt_idx)[0]
-            maidx = NP.where(minus_idx & alt_idx)[0]
-            pridx = NP.where(plus_idx & ref_idx)[0]
-            mridx = NP.where(minus_idx & ref_idx)[0]
-
-            sidxs = (pridx, paidx, mridx, maidx)
-            bcs = (pbases, pbases, mbases, mbases)
-
-            for i, (smat, sidx, bc) in enumerate(zip(smats, sidxs, bcs)):
-                ridx = NP.where(NP.in1d(sids, sidx))[0]
-                smat[sids[ridx], bids[ridx]] = bc[ridx]
-
-            """
-
-        self.smats = [strand_ref_mat, strand_alt_mat]
-
-        #snvs['total_barcodes'] = ((plus_ref_mat > 0) | (minus_ref_mat > 0) | (plus_alt_mat > 0) | (minus_alt_mat > 0)).sum(axis=1)
-        #mnames = 'plus_ref_barcodes', 'plus_alt_barcodes', 'minus_ref_barcodes', 'minus_alt_barcodes'
-        #for mn, mat in zip(mnames, self.mats):
-        #    snvs[mn] = NP.count_nonzero(mat, axis=1)
-
-        snvs['total_barcodes'] = ((strand_ref_mat > 0) | (strand_alt_mat > 0)).sum(axis=1)
-        mnames = 'strand_ref_barcodes', 'strand_alt_barcodes'
-        for mn, mat in zip(mnames, self.smats):
-            snvs[mn] = NP.count_nonzero(mat, axis=1)
-            snvs[mn] = NP.count_nonzero(mat, axis=1)
+        for i, (s, e) in enumerate(zip(c_rmat.indptr, c_rmat.indptr[1:])):
+            i1 = c_rmat.data[s:e] > 0
+            i2 = c_amat.data[s:e] > 0
+            tb[i] += (i1 | i2).sum()
+            sr[i] += i1.sum()
+            sa[i] += i2.sum()
