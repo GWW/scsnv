@@ -124,10 +124,8 @@ class SNVAnnotate(object):
         #for i, m in enumerate(self.smats):
         #    self.smats[i] = csr_matrix(m[keep])
         print(keep, keep.shape, self.smats[0].shape, self.smats[1].shape)
-        o1 = self.smats[0][keep]
-        o2 = self.smats[1][keep]
-        self.smats[0] = o1
-        self.smats[1] = o2
+        self.smats[0] = self.smats[0][keep]
+        self.smats[1] = self.smats[1][keep]
         #indptr, indices, ref, alt = align_matrices(self.smats[0], self.smats[1])
         #self.smats[0] = csr_matrix((ref,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
         #self.smats[1] = csr_matrix((alt,indices,indptr), shape=(self.smats[0].shape[0],self.smats[0].shape[1]))
@@ -168,7 +166,7 @@ class SNVAnnotate(object):
         tot = snvs[[f'{b}_total' for b in 'ACGT']].sum(axis=1)
         with NP.errstate(divide='ignore'):
             purity = (rcounts + acounts) / tot
-        ppass = ~pd.isnull(purity) & (purity >= min_purity)
+        ppass = (~pd.isnull(purity) & (purity >= min_purity)).values
 
         self._ppass = ppass
 
@@ -186,7 +184,7 @@ class SNVAnnotate(object):
 
         self._pstrand = pstrand
         self._mstrand = mstrand
-        self._spass = spass
+        self._spass = spass.values
 
         dfo = pd.DataFrame(index=snvs.index)
         dfo['ref'] = snvs.ref
