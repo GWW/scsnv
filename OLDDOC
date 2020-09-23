@@ -1,0 +1,357 @@
+
+## Mixing two samples without downsampling
+```bash
+scsnv mixture -i index_prefix -r genome.fa -o mixed/pileup -m mix_barcodes.txt -l V2 -t 4 ../sample1/merged_collapsed.bam sample2/merged_collapsed.bam
+```
+
+This will create a pileup.h5 file containing SNVs from the mixture of both samples
+
+See the [scsnv mixture](#mixture) documentation for a description of the mix_barcodes.txt file
+
+## Mixing two samples with downsampling and collapsing
+This will downsample both samples to 10% of the total reads, collapse the reads and pileup them up
+
+```bash
+scsnv mixture -i index_prefix -r genome.fa -o mixed/pileup -m mix_barcodes.txt -c -d 10,10 -l V2 -t 4 ../sample1/merged.bam sample2/merged.bam
+```
+
+## Detailed documentation
+
+The scSNV is separated into multiple steps using either the scsnv C++ command or the scsnvmisc python command:
+
+1. [scsnv index](#indexing) -- Generating a reusable genome index
+1. [scsnv count](#count) -- Counting the barcode tags
+1. [scsnv map](#map) -- Mapping the alignment tags and correcting the barcodes
+1. [scsnv quant](#quantify) -- Deduplicating and quantifying the UMI tags
+1. [scsnv collapse](#collapse) -- Collapsing the sorted bam file fragments
+1. [scsnvmisc cells](#cells) -- Finding barcodes that are likely cells
+1. [scsnv pileup](#pileup) -- Piling up the collapsed bam file
+
+Additionally, there are some other commands to create simulated mixtures and generate input files for vireo, souporcell and scsplit:
+
+1. [scsnvmisc annotate](#annotate) -- Annotate a pileup file using various database sources
+1. [scsnvmisc snv2vcfmtx](#snv2vcfmtx) -- Generate variant matrices for genotyping with vireo etc.
+
+Finally, there is a [scsnv mixture](#mixture) command to mix multiple samples using a list of barcodes
+
+#### Indexing
+##### Required Input Files:
+1. A genome fasta file
+1. A gene GTF file.
+1. A BWA indexed genome fasta file (ie. ```scsnv/src/bwa/bwa index genome.fa```)
+
+*Note that scSNV has only been tested with genome annotation files from ensembl*
+
+##### Command:
+```bash
+scsnv index -g genes.gtf -r genome.fa output_prefix
+```
+
+##### Arguments:
+
+| Option        | Argument      | Function |
+| ---------------|:--------------|:---------|
+| --min-length,-l | integer | Minimum cDNA length to be indexed |
+| --retained-introns | | Include transcripts with retained introns in the index |
+| --skip-build |  | Skip building the transcript BWA index |
+
+#### Count
+##### Required Input Files: 
+1. The fastq file directory
+1. The known 10X barcode file
+  1. For version 2 libraries use scsnv/data/737K-august-2016.txt
+  1. For version 3 libraries use scsnv/data/3M-february-2018.txt.gz
+
+##### Command:
+```bash
+scsnv count -o sample/barcode  -k known_barcodes_file -l V2 sample/run1
+```
+
+##### Arguments:
+
+| Option        | Argument      | Function | Required |
+| ---------------|:--------------|:---------|:----------|
+| -o | path | output prefix | Required |
+| -k | path | known barcodes file (see above) | Required |
+| -l, --library | V2, V2_5P, V3, V3_5P | 10X library type (5P suffix for 5-prime libraries) | Default V2 |
+
+##### Output Files:
+
+| File        | Contents      |
+| ---------------|:--------------|
+| sample/barcode_counts.txt.gz | The number of reads matching each known barcode |
+| sample/barcode_totals.txt | Read count information from each fastq file including the number of reads that match to a known barcode |
+| sample/run1_barcode_totals.txt | For future use with parallelization (may be removed in the future) |
+| sample/run1_barcode_counts.txt.gz | For future use with parallelization (may be removed in the future) |
+
+#### Map
+##### Required Input Files:
+1. The scSNV index path and prefix from the index command
+1. The BWA genome index file
+1. The fastq file directory
+1. The barcode counts file from the count command
+
+##### Command:
+
+```bash
+scsnv map -o sample/run1 -i index_prefix -g bwa_genome_index -l V2 -t 8 --write-threads 4 -b sample/barcode_counts.txt.gz sample/run1
+```
+
+##### Arguments:
+
+| Option        | Argument      | Function | Required |
+| ---------------|:--------------|:---------|:-----------|
+| -o, --output | path | output prefix | Yes |
+| -i, --index | path | scSNV transcript index | Yes |
+| -g, --genome | path | BWA genome index | Yes |
+| -b, --barcodes | path | Barcode count file from the count step | Yes |
+| -l, --library | V2, V2_5P, V3, V3_5P | 10X library type (5P suffix for 5-prime libraries) | Default: V2 |
+| -t, --thereads | integer | Processing Threads |  Default: 1 |
+| -d, --dust | integer | Dust complexity filter (-1 to disable) | | Default: 4 |
+| --write-threads | integer | Number of threads to use for bam writing | Default: 1 |
+| --overhang | integer | Trim the ends of a read if they overhang a splice site by X bp | Default: 5 |
+| --no-bam | | Disable bam file output | No |
+| --bam-tmp | path | Temporary bam file folder | default <output_prefix>\_tmp |
+| --bam-thread | integer | Number of bam reads to buffer for each thread | Default: 50000 |
+| --bam-write | integer | Number of output reads per temporary bam file | Default: 5000000 | 
+
+##### Output Files:
+
+| File        | Contents      |
+| ---------------|:--------------|
+| run1_tmp/\*.bam | sorted bam file fragments |
+| run1_tags.gz / run1\_idx.gz | tag mapping information for quantificaiton and collapsing |
+| run1\_alignment_summary.txt | Alignment rate summary |
+| run1\_barcode_rates.txt.gz | Per barcode read mapping information and number of corrected barcodes |
+
+#### Quantify
+##### Required Input Files:
+1. The scSNV index path and prefix from the index command
+1. The output prefix from the map command
+##### Command:
+```bash
+scsnv quant -o sample/summary -i index_prefix -l V2 -t 4 sample/run1
+```
+##### Arguments:
+| Option        | Argument      | Function | Required |
+| ---------------|:--------------|:---------|:-----------|
+| -o, --output | path | output prefix | Yes |
+| -i, --index | path | scSNV index prefix| Yes |
+| -l, --library | V2, V2_5P, V3, V3_5P | 10X library type (5P suffix for 5-prime libraries) | Default: V2 |
+| -t, --threads | integer | Processing threads (4-8 is generally sufficient) | Default: 1 |
+| --no-bam | | If this option was included in the mapping step you can use it here to disable writing the umi\_map\_.txt.gz file | No |
+| -c, --count-groups | text file | Output summed spliced molecule counts for each group of genes (see below) | No |
+| -m, --min-molecules | integer | Minimum number of spliced molecules to output the barcode | Default: 0 |
+
+
+
+##### Output Files:
+| File        | Contents      |
+| ---------------|:--------------|
+| summary.h5 | Quantification and barcode data (see below) |
+| summary\_umi\_map.txt.gz | UMI mapping data for read collapsing |
+
+##### Summary H5 File:
+| Group        | Value      |
+| ---------------|:--------------|
+| file_rates | Per fastq file alignment information |
+| barcode_rates | Per barcode alignment rates, molecule counts, PCR duplicate counts, and gene group sums. There is a field named **field_order** that contains a list of all the fields |
+| barcode_ids | Cellular Barcode Sequences |
+| gene_ids | Gene Identifiers |
+| gene_names | Gene Names |
+| exonic | Spliced molecule sparse matrix with three groups 1. **rows**: gene index, 2. **cols**: barcode index 3. data: **molecule counts**|
+| intronic | Unspliced molecule sparse matrix with three groups 1. **rows**: gene index, 2. **cols**: barcode index 3. **data**: molecule counts|
+
+#### Collapse
+##### Required Input Files:
+1. The scSNV index path and prefix from the index command
+1. The reference genome file
+1. The UMI map file from the quant step
+1. The barcode count file from the count command
+1. The temporary bam file folder
+
+##### Command:
+```bash
+scsnv collapse -r genome.fa -i index_prefix -u sample/summary_umi_map.txt.gz -t 4 --bam-write 4 -b sample/barcode_counts.txt.gz -l V2 -o sample/merged sample/run1_tmp
+```
+##### Arguments:
+| Option        | Argument      | Function | Required |
+| ---------------|:--------------|:---------|:---------|
+| -i, --index | path | scSNV index prefix| Yes |
+| -r, --ref | path | scSNV index prefix| Yes |
+| -l, --library | V2, V2_5P, V3, V3_5P | 10X library type (5P suffix for 5-prime libraries) | Default: V2 |
+| -o, --output | path | output prefix | Yes |
+| -b, --barcodes | path | Barcode count file from the count step | Yes |
+| -u, --umi-map | path | UMI Map file from the quant step | Yes |
+| --no-merged | | Don't write the merged.bam file | No |
+| -t, --threads | integer | Processing threads (4-8 is generally sufficient) | Default: 1 |
+| -w, --bam-write | integer | Number of bam file writing threads | Default: 1 |
+| -c, --cell-ranger | | Temporary bam folder is a path to a cell ranger bam file | 
+
+##### Output Files:
+| File        | Contents      |
+| ---------------|:--------------|
+| sample/merged.bam | Uncollapsed reads with PCR duplicates marked |
+| sample/merged_collapsed.bam | BAM file with the reads collapsed |
+| sample/merged_lengths.txt.gz | A tab separated file with the number of reads contained in the collapsed read and the final length of the read | 
+
+#### Cells
+##### Required Input Files:
+1. summary.h5 from scsnv quant
+
+##### Command:
+```bash
+scsnvmisc cells -o sample sample/summary.h5
+```
+##### Output Files:
+| File        | Contents      |
+| ---------------|:--------------|
+| sample/qa.png | Uncollapsed reads with PCR duplicates marked |
+| sample/cells.h5 | Serialized python flammkuchen file with the cells identified |
+| sample/passed_barcodes.txt.gz |  List of passed barcodes for read pileup etc. |
+
+##### Cells flammkuchen file:
+
+
+#### Pileup
+##### Required Input Files:
+1. The scSNV index path and prefix from the index command
+1. The reference genome file
+1. The collapsed bam file (or merged bam file) from the collapse command
+1. A list of passed barcodes with a header, for example, a passed_barcodes.txt.gz file from `scsnvpy cells`
+
+##### Command:
+```bash
+scsnv pileup -r genome.fa -i index_prefix -t 8 -p sample/passed_barcodes.txt.gz -l V2 -o sample/pileup sample/merged_collapsed.bam
+```
+##### Arguments:
+| Option        | Argument      | Function | Required |
+| ---------------|:--------------|:---------|:---------|
+| -i, --index | path | scSNV index prefix| Yes |
+| -r, --ref | path | scSNV index prefix| Yes |
+| -o, --output | path | output prefix | Yes |
+| -p, --passed | path | Barcode count file from the count step | Yes |
+| -t, --threads | integer | Processing threads (4-8 is generally sufficient) | Default: 1 |
+| -l, --library | V2, V2_5P, V3, V3_5P | 10X library type (5P suffix for 5-prime libraries) | Default: V2 |
+| -d, --dups | | Include PCR duplicates in the pileup (for uncollapsed bam files only) | No |
+| -c, --cellranger | | Indicates that the collapsed or merged bam file was from Cell Ranger | No |
+| --min-barcodes | integer | Minimum number of barcodes supporting a position to consider it for SNV calling | Default: 15 |
+| --min-alt | integer | Minimum number of barcodes supporting the alternative allele at a position to call an SNV | Default: 10 |
+| --min-qual | integer | Minimum base quality at a given position to count the read | Default: 20 |
+| --min-af | float | Minimum allele fraction to count a position as an SNV | Default: 0.05 | 
+| --min-edge | integer | A valid SNV must have at least one read with a supporting SNV at least X bp from the read end | Default: 5 | 
+
+##### Output Files:
+| File        | Contents      |
+| ---------------|:--------------|
+| sample/pileup\_base_rates.txt | Tab separated file of base annotation counts for each nucleotide / strand combination |
+| sample/pileup\_barcode_matrices.h5 | Pileup data matrices (See Below) |
+| sample/pileup.txt.gz | Summary data for each SNV that passed the filtering criteria |
+
+##### Pileup H5 File:
+| Group        | Value      |
+| ---------------|:--------------|
+| barcodes | Cellular barcodes (used by cellular barcode indexes) |
+| pos | Zero-based SNV position (used by SNV row indexes) |
+| tid | SNV chromosome Name Index (used by SNV row indexes) |
+| refs | SNV chromosome Names (used by SNV row indexes) |
+| base_A, base_C, base_G, base_C | Sparse base count matrices 1. **barcode_ids**: Cell Barcode Indexes, 2. **snps**: SNV Row Indexes, 3. **plus**: Plus strand counts, 4. **minus**: Minus strand counts. |
+| barcode_rates | Per cellular barcode base annotation counts for each nucleotide and strand |
+| coverage | Sparse matrix of the base coverage rates for the plus and minus strand 1. chroms: Chromosome names, 2. **tid**: Chromosome ids 3. **pos**: Zero-based position 4. **plus**: Plus strand coverage, 5. **minus**: Minus strand coverage|
+
+#### Annotate
+##### Command:
+```bash
+scsnvmisc annotate -r ./edits/repeat_masker.txt.gz -d 1000GENOMES.txt.gz -e REDIportal.bed.gz sample/pileup
+```
+##### Arguments:
+| Option        | Argument      | Function | Required |
+| ---------------|:--------------|:---------|:---------|
+| -e, --edits | path | BED file of RNA edits from REDIportal | No |
+| -r, --repeats | path | Path to UCSC repeat masker annotations | No |
+| -d, --g1000 | path | Path to 1000 Genomes txt file (see below to make) | No |
+| -v, --vcf | path | VCF file to annotate with (uses the name field below), can be repeated for multiple VCF files | No |
+| -n, --name | path | Name key to use if a SNV is found in this VCF file (one for each VCF file) | No |
+| -u, --purity | float | Proportion of non-reference counts that must match a single allele (Default: 0.95 | No |
+| -s, --strand-purity | float | Proportion of reads that must be derived from the same strand to call a stranded SNP (Default: 0.9) | No |
+
+##### 1000 Genomes File Generation:
+```bash
+wget ftp://ftp.ensembl.org/pub/release-99/variation/vcf/homo_sapiens/1000GENOMES-phase_3.vcf.gz
+wget ftp://ftp.ensembl.org/pub/release-99/variation/vcf/homo_sapiens/1000GENOMES-phase_3.vcf.gz.csi
+wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrMT.phase3_callmom-v0_4.20130502.genotypes.vcf.gz
+wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrMT.phase3_callmom-v0_4.20130502.genotypes.vcf.gz.tbi
+
+bcftools view -m2 -M2 -v snps -i "MAF>=0.01" -o 1000GENOMES-filtered.vcf.gz -O z 1000GENOMES-phase_3.vcf.gz
+bcftools +fill-tags ALL.chrMT.phase3_callmom-v0_4.20130502.genotypes.vcf.gz -- -t AF | bcftools view -m2 -M2 -v snps -i "MAF>=0.01" -o ALL.chrMT-filtered.vcf.gz
+
+zgrep --no-filename -E "^(#)" -v ALL.chrMT-filtered.vcf.gz | gzip > ALL.chrMT-filtered-no-header.vcf.gz
+zgrep --no-filename -E "^(#)\1+" -v 1000GENOMES-filtered.vcf.gz ALL.chrMT-filtered-no-header.vcf.gz | cut -f 1,2,4,5 | gzip > 1000GENOMES.txt.gz
+```
+
+##### Output Files:
+| File        | Contents      |
+| ---------------|:--------------|
+| sample/pileup_annotated.h5 | Serialized python flammkuchen file with annotated SNV data and per cell counts |
+
+#### snv2vcfmtx
+
+##### Command:
+```bash
+scsnvmisc snv2vcfmtx -r index_prefix_lenghts.txt -f genome.fa -o ./sample/vireo -u -m sample/pileup_annotated.h5
+```
+
+See scsnvmisc snv2vcfmtx -h for different parameter combinations
+
+##### Output Files:
+Files necessary to run scsplit, vireo or souporcell
+
+#### mixture
+##### Required Input Files:
+##### Command:
+```bash
+scsnv mixture -i index_prefix -r genome.fa -o mixed/pileup -m mix_barcodes.txt  -l V2 -t 4 ../sample1/merged.bam sample2/merged.bam [sampleN/merged.bam]
+```
+##### Arguments:
+| Option        | Argument      | Function | Required |
+| ---------------|:--------------|:---------|:---------|
+| -i, --index | path | scSNV index prefix| Yes |
+| -r, --ref | path | Path to genone.fa file | Yes |
+| -o, --out | path | Pileup output prefix | Yes |
+| -t, --threads | path | Processing threads | Yes |
+| -m, --mixture | file | Barcode mixture file see below | Yes |
+| -c, --collapse |  | Collapse merged.bam file reads (for down sampling). Without this flag a collapsed bam file is expected | No |
+| -d, --downsample | integers | Comma separarated list of downsample percents for each sample | No |
+| -s, --seed | integer | Override the random number generator seed for downsampling | No |
+| --min-barcodes | integer | Minimum number of barcodes supporting a position to consider it for SNV calling | Default: 15 |
+| --min-alt | integer | Minimum number of barcodes supporting the alternative allele at a position to call an SNV | Default: 10 |
+| --min-qual | integer | Minimum base quality at a given position to count the read | Default: 20 |
+| --min-af | float | Minimum allele fraction to count a position as an SNV | Default: 0.05 | 
+| --min-edge | integer | A valid SNV must have at least one read with a supporting SNV at least X bp from the read end | Default: 5 | 
+
+##### Output Files:
+| File        | Contents      |
+| ---------------|:--------------|
+| mixed/pileup\_base_rates.txt | Tab separated file of base annotation counts for each nucleotide / strand combination |
+| mixed/pileup\_barcode_matrices.h5 | Pileup data matrices (See Below) |
+| mixed/pileup.txt.gz | Summary data for each SNV that passed the filtering criteria |
+
+These are the same as the pileup command output
+
+##### Mixture Text File Description:
+Tab deliminated file with the following fields
+
+Header: sample\tsample1\tbarcode1\tsample2\tbarcode2
+
+1. Sample: Name of the sample the barcode is from
+1. sample1: Index for a singlet (ie. first bam file is 0, second bam file is 1, etc)
+1. barcode1: Barcode for the single from the sample
+1. sample2: Index for the second cell in a doublet otherwise -1 for singlets
+1. barcode2: Barcode from the doublets file otherwise a -
+
+### Future Features
+
+1. Parallelizing the scSNV mapping step on a computational cluster
+1. Move this manual to readthedocs
+1. More detailed documentation on the quantificaiton and pileup H5 files (as needed).
+
