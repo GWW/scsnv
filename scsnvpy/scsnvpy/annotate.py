@@ -123,7 +123,7 @@ class SNVAnnotate(object):
 
         #for i, m in enumerate(self.smats):
         #    self.smats[i] = csr_matrix(m[keep])
-        print(keep)
+        print(keep, keep.shape, self.smats[0].shape, type(self.smats[0]), self.smats[1].shape, type(self.smats[1]))
         self.smats[0] = self.smats[0][keep]
         self.smats[1] = self.smats[1][keep]
         #indptr, indices, ref, alt = align_matrices(self.smats[0], self.smats[1])
@@ -322,3 +322,7 @@ class SNVAnnotate(object):
             tb[i] += (i1 | i2).sum()
             sr[i] += i1.sum()
             sa[i] += i2.sum()
+
+        self._snvs['total_barcodes'] = tb
+        self._snvs['ref_strand_barcodes'] = sr
+        self._snvs['ref_strand_barcodes'] = sa
