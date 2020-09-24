@@ -325,4 +325,4 @@ class SNVAnnotate(object):
 
         self._snvs['total_barcodes'] = tb
         self._snvs['ref_strand_barcodes'] = sr
-        self._snvs['ref_strand_barcodes'] = sa
+        self._snvs['alt_strand_barcodes'] = sa
