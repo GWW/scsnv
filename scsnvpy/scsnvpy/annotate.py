@@ -313,6 +313,7 @@ class SNVAnnotate(object):
 
 
         tb = NP.zeros(len(snvs), dtype='int')
+        bb = NP.zeros(len(snvs), dtype='int')
         sa = NP.zeros(len(snvs), dtype='int')
         sr = NP.zeros(len(snvs), dtype='int')
 
@@ -320,9 +321,11 @@ class SNVAnnotate(object):
             i1 = c_rmat.data[s:e] > 0
             i2 = c_amat.data[s:e] > 0
             tb[i] += (i1 | i2).sum()
+            bb[i] += (i1 & i2).sum()
             sr[i] += i1.sum()
             sa[i] += i2.sum()
 
-        self._snvs['strand_total_barcodes'] = tb
-        self._snvs['strand_ref_barcodes'] = sr
-        self._snvs['strand_alt_barcodes'] = sa
+        self._snvs['total_barcodes'] = tb
+        self._snvs['ref_strand_barcodes'] = sr
+        self._snvs['alt_strand_barcodes'] = sa
+        self._snvs['refalt_strand_barcodes'] = sa
