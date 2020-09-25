@@ -105,7 +105,6 @@ class SNVAnnotate(object):
 
     def _filter_bad(self):
         keep = self._ppass & self._spass
-
         c1 = (self._ppass & ~self._spass)
         c2 = (~self._ppass & self._spass)
         c3 = (self._ppass & self._spass)
@@ -174,7 +173,7 @@ class SNVAnnotate(object):
             minus_acounts[idx] = snvs[f'{b}_minus_counts'].values[idx]
 
 
-        tot = snvs[[f'{b}_total' for b in 'ACGT']].sum(axis=1)
+        tot = snvs[[f'{b}_total' for b in 'ACGT']].sum(axis=1).values
         rcounts = plus_rcounts + minus_rcounts
         acounts = plus_acounts + minus_acounts
 
