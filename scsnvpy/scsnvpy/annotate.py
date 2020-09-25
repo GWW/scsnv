@@ -24,7 +24,7 @@ import h5py, sys
 import flammkuchen as flm
 import argparse
 from scipy.sparse import csr_matrix, coo_matrix
-from .snvmats import align_matrices, merge_coo_dups
+from .snvmats import align_matrices, merge_coo_dups, merge_coo_dups_to_csr
 #from .snvcmp import snv_type_names, snv_type_funcs, snv_type_shorts
 
 BMAP = {x:i for i, x in enumerate('ACGTN')}
@@ -160,30 +160,37 @@ class SNVAnnotate(object):
 
     def _call_raw_snvs(self, min_purity, min_spurity):
         snvs = self._raw_snvs
-        rcounts = snvs.lookup(snvs.index, [f'{b}_total' for b in snvs.ref])
-        acounts = snvs.lookup(snvs.index, [f'{b}_total' for b in snvs.max_non_ref])
+        plus_rcounts = NP.zeros(len(snvs), dtype='int32')
+        plus_acounts = NP.zeros(len(snvs), dtype='int32')
+        minus_rcounts = NP.zeros(len(snvs), dtype='int32')
+        minus_acounts = NP.zeros(len(snvs), dtype='int32')
+        for b in 'ACGT':
+            idx = (snvs.ref == b).values
+            plus_rcounts[idx] = snvs[f'{b}_plus_counts'].values[idx]
+            minus_rcounts[idx] = snvs[f'{b}_minus_counts'].values[idx]
+
+            idx = (snvs.max_non_ref == b).values
+            plus_acounts[idx] = snvs[f'{b}_plus_counts'].values[idx]
+            minus_acounts[idx] = snvs[f'{b}_minus_counts'].values[idx]
+
 
         tot = snvs[[f'{b}_total' for b in 'ACGT']].sum(axis=1)
-        with NP.errstate(divide='ignore'):
-            purity = (rcounts + acounts) / tot
-        ppass = (~pd.isnull(purity) & (purity >= min_purity)).values
+        rcounts = plus_rcounts + minus_rcounts
+        acounts = plus_acounts + minus_acounts
 
+        with NP.errstate(divide='ignore'):
+            purity = (plus_rcounts + plus_acounts + minus_rcounts + minus_acounts) / tot
+            purity[NP.isnan(purity)] = -1
+
+        ppass = (purity >= min_purity)
         self._ppass = ppass
 
-        plus_rcounts = snvs.lookup(snvs.index, [f'{b}_plus_counts' for b in snvs.ref])
-        minus_rcounts = snvs.lookup(snvs.index, [f'{b}_minus_counts' for b in snvs.ref])
-        plus_acounts = snvs.lookup(snvs.index, [f'{b}_plus_counts' for b in snvs.max_non_ref])
-        minus_acounts = snvs.lookup(snvs.index, [f'{b}_minus_counts' for b in snvs.max_non_ref])
-
         with NP.errstate(divide='ignore'):
-            spurity = (plus_rcounts + plus_acounts) / (plus_rcounts + plus_acounts + minus_rcounts + minus_acounts)
+            spurity = (plus_rcounts + plus_acounts) / (rcounts + acounts)
 
         pstrand = ~pd.isnull(spurity) & (spurity >= min_spurity)
         mstrand = ~pd.isnull(spurity) & (spurity <= (1 - min_spurity ))
         spass = pstrand | mstrand
-
-        self._pstrand = pstrand
-        self._mstrand = mstrand
         self._spass = spass
 
         dfo = pd.DataFrame(index=snvs.index)
@@ -246,8 +253,9 @@ class SNVAnnotate(object):
         strand_ref_mat = None
         strand_alt_mat = None
 
-        c_rmat = None
-        c_amat = None
+        cmat = None
+        test = (self._ppass & self._spass)
+        dpos = NP.array(self._h5f['pos'])
 
         for b1 in 'ACGT':
             d = self._h5f[f'base_{b1}']
@@ -263,7 +271,6 @@ class SNVAnnotate(object):
                     strand_idx = (base_idx) & (snvs['strand'].values == strand)
                     if ~NP.any(strand_idx):
                         continue
-                    
                     c1 = pbases1 if strand == '+' else mbases1
                     c2 = pbases2 if strand == '+' else mbases2
                     idx = NP.where(strand_idx)[0]
@@ -280,42 +287,63 @@ class SNVAnnotate(object):
                     amat[:,1] = bids2[ridx2]
                     amat[:,2] = c2[ridx2]
 
+
+
                     nl = rmat.shape[0]
                     tmp1 = NP.vstack([rmat, amat])
                     tmp1[nl:,2] = 0
-                    tmp1 = tmp1[NP.lexsort((tmp1[:,0], tmp1[:,1]))]
+                    tmp1 = tmp1[NP.lexsort((tmp1[:,2], tmp1[:,1], tmp1[:,0]))]
                     #print(b1, b2, strand, NP.count_nonzero(tmp1[:nl, 2]), NP.count_nonzero(tmp1[nl:, 2]))
 
                     nl = amat.shape[0]
                     tmp2 = NP.vstack([amat, rmat])
                     tmp2[nl:,2] = 0
-                    tmp2 = tmp2[NP.lexsort((tmp2[:,0], tmp2[:,1]))]
-                    #print(b1, b2, strand, NP.count_nonzero(tmp2[:nl, 2]), NP.count_nonzero(tmp2[nl:, 2]))
+                    tmp2 = tmp2[NP.lexsort((tmp2[:,2], tmp2[:,1], tmp2[:,0]))]
+
+                    tmp1 = merge_coo_dups(tmp1)
+                    tmp2 = merge_coo_dups(tmp2)
 
                     rmat = tmp1
                     amat = tmp2
+                    
+                    tmat = NP.zeros((amat.shape[0], 4), dtype='int32')
+                    tmat[:,0] = amat[:,0]
+                    tmat[:,1] = amat[:,1]
+                    tmat[:,2] = rmat[:,2]
+                    tmat[:,3] = amat[:,2]
 
-                    if c_rmat is None:
-                        c_rmat = rmat
-                        c_amat = amat
+
+                    sta =  0
+                    for i, r in enumerate(tmat):
+                        if r[0] != tmat[sta, 0]:
+                            rc = (tmat[sta:i, 2] > 0).sum()
+                            ac = (tmat[sta:i, 3] > 0).sum()
+                            if (rc == ac == 0):
+                                print(r[0], sta, i, dpos[sta], 
+                                        'p/m1', pbases1[sids1 == r[0]].sum(), mbases1[sids1 == r[0]].sum(), 
+                                        'p/m2', pbases2[sids2 == r[0]].sum(), mbases2[sids2 == r[0]].sum()) 
+                                print(snvs.iloc[r[0]])
+                                print('')
+                            sta = i
+
+                    if cmat is None:
+                        cmat = tmat
                     else:
-                        c_rmat = NP.vstack([c_rmat, rmat])
-                        c_amat = NP.vstack([c_amat, amat])
+                        cmat = NP.vstack([cmat, tmat])
 
                     #print(b1, b2, strand, NP.count_nonzero(c_rmat[:, 2]), NP.count_nonzero(c_amat[:, 2]))
 
-        c_rmat = c_rmat[NP.lexsort((c_rmat[:,2], c_rmat[:,1], c_rmat[:,0]))]
-        c_amat = c_amat[NP.lexsort((c_amat[:,2], c_amat[:,1], c_amat[:,0]))]
 
-        c_rmat = merge_coo_dups(c_rmat, len(snvs), BC)
-        c_amat = merge_coo_dups(c_amat, len(snvs), BC)
-        self.smats = [c_rmat, c_amat]
-
+        self.smats = [
+            csr_matrix((cmat[:, 2], (cmat[:, 0], cmat[:, 1])), shape=(len(snvs), BC)),
+            csr_matrix((cmat[:, 3], (cmat[:, 0], cmat[:, 1])), shape=(len(snvs), BC))
+        ]
 
         tb = NP.zeros(len(snvs), dtype='int')
         bb = NP.zeros(len(snvs), dtype='int')
         sa = NP.zeros(len(snvs), dtype='int')
         sr = NP.zeros(len(snvs), dtype='int')
+        c_rmat, c_amat = self.smats
 
         for i, (s, e) in enumerate(zip(c_rmat.indptr, c_rmat.indptr[1:])):
             i1 = c_rmat.data[s:e] > 0

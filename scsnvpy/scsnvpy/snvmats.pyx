@@ -22,8 +22,12 @@ def align_matrices(NP.ndarray[NP.int32_t, ndim=2] ref, NP.ndarray[NP.int32_t, nd
 
     return indptr, indices, refd, altd
 
+def merge_coo_dups(NP.ndarray[NP.int32_t, ndim=2] mat):
+    cdef Py_ssize_t N = mat.shape[0]
+    count = amats.mergeDups(&mat[0, 0], N)
+    return mat[:count]
 
-def merge_coo_dups(NP.ndarray[NP.int32_t, ndim=2] mat, NN, MM):
+def merge_coo_dups_to_csr(NP.ndarray[NP.int32_t, ndim=2] mat, NN, MM):
     cdef Py_ssize_t N = mat.shape[0]
     count = amats.mergeDups(&mat[0, 0], N)
     return csr_matrix((mat[:count, 2], (mat[:count, 0], mat[:count, 1])), shape=(NN, MM))

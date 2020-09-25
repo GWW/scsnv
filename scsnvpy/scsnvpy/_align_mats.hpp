@@ -86,5 +86,5 @@ inline size_t mergeDups(int32_t * m, size_t N){
             out[2] = r[2];
         }
     }
-    return (out + 3) - m;
+    return ((out + 3) - m) / 3;
 }
