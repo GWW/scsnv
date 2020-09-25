@@ -259,6 +259,7 @@ class SNVAnnotate(object):
         for b1 in 'ACGT':
             d = self._h5f[f'base_{b1}']
             bids1, sids1, pbases1, mbases1 = map(NP.array, (d['barcode_ids'], d['snps'], d['plus'], d['minus']))
+            print(b1, ((pbases1 + mbases1) == 0).sum())
             for b2 in 'ACGT':
                 if b1 == b2:
                     continue
@@ -276,63 +277,44 @@ class SNVAnnotate(object):
                     ridx1 = NP.where(NP.in1d(sids1, idx))[0]
                     ridx2 = NP.where(NP.in1d(sids2, idx))[0]
 
-                    rmat = NP.zeros((len(ridx1), 3), dtype='int32')
-                    rmat[:,0] = sids1[ridx1]
-                    rmat[:,1] = bids1[ridx1]
-                    rmat[:,2] = c1[ridx1]
+                    rmat = NP.zeros((len(ridx1) + len(ridx2), 3), dtype='int32')
+                    rmat[:len(ridx1),0] = sids1[ridx1]
+                    rmat[:len(ridx1),1] = bids1[ridx1]
+                    rmat[:len(ridx1),2] = c1[ridx1]
 
-                    amat = NP.zeros((len(ridx2), 3), dtype='int32')
-                    amat[:,0] = sids2[ridx2]
-                    amat[:,1] = bids2[ridx2]
-                    amat[:,2] = c2[ridx2]
+                    amat = NP.zeros((len(ridx1) + len(ridx2), 3), dtype='int32')
+                    amat[:len(ridx2),0] = sids2[ridx2]
+                    amat[:len(ridx2),1] = bids2[ridx2]
+                    amat[:len(ridx2),2] = c2[ridx2]
 
 
 
-                    nl = rmat.shape[0]
-                    tmp1 = NP.vstack([rmat, amat])
-                    tmp1[nl:,2] = 0
-                    tmp1 = tmp1[NP.lexsort((tmp1[:,2], tmp1[:,1], tmp1[:,0]))]
-                    #print(b1, b2, strand, NP.count_nonzero(tmp1[:nl, 2]), NP.count_nonzero(tmp1[nl:, 2]))
+                    rmat[len(ridx1):,2] = 0
+                    rmat[len(ridx1):,0] = amat[:len(ridx2),0]
+                    rmat[len(ridx1):,1] = amat[:len(ridx2),1]
 
-                    nl = amat.shape[0]
-                    tmp2 = NP.vstack([amat, rmat])
-                    tmp2[nl:,2] = 0
-                    tmp2 = tmp2[NP.lexsort((tmp2[:,2], tmp2[:,1], tmp2[:,0]))]
+                    amat[len(ridx2):,0] = rmat[:len(ridx1),0]
+                    amat[len(ridx2):,1] = rmat[:len(ridx1),1]
+                    amat[len(ridx2):,2] = 0
 
-                    tmp1 = merge_coo_dups(tmp1)
-                    tmp2 = merge_coo_dups(tmp2)
+                    rmat = rmat[NP.lexsort((rmat[:,2], rmat[:,1], rmat[:,0]))]
+                    amat = amat[NP.lexsort((amat[:,2], amat[:,1], amat[:,0]))]
 
-                    rmat = tmp1
-                    amat = tmp2
+                    rmat = merge_coo_dups(rmat)
+                    amat = merge_coo_dups(amat)
                     
                     tmat = NP.zeros((amat.shape[0], 4), dtype='int32')
                     tmat[:,0] = amat[:,0]
                     tmat[:,1] = amat[:,1]
                     tmat[:,2] = rmat[:,2]
                     tmat[:,3] = amat[:,2]
-
-
-                    sta =  0
-                    for i, r in enumerate(tmat):
-                        if r[0] != tmat[sta, 0]:
-                            rc = (tmat[sta:i, 2] > 0).sum()
-                            ac = (tmat[sta:i, 3] > 0).sum()
-                            if (rc == ac == 0):
-                                print(r[0], sta, i, dpos[sta], 
-                                        'p/m1', pbases1[sids1 == r[0]].sum(), mbases1[sids1 == r[0]].sum(), 
-                                        'p/m2', pbases2[sids2 == r[0]].sum(), mbases2[sids2 == r[0]].sum()) 
-                                print(snvs.iloc[r[0]])
-                                print('')
-                            sta = i
-
+                    tmat = tmat[tmat[:,2:].sum(axis=1) > 0]
                     if cmat is None:
                         cmat = tmat
                     else:
                         cmat = NP.vstack([cmat, tmat])
 
-                    #print(b1, b2, strand, NP.count_nonzero(c_rmat[:, 2]), NP.count_nonzero(c_amat[:, 2]))
-
-
+        print("Check: ", ((cmat[:,2] + cmat[:,3]) == 0).sum())
         self.smats = [
             csr_matrix((cmat[:, 2], (cmat[:, 0], cmat[:, 1])), shape=(len(snvs), BC)),
             csr_matrix((cmat[:, 3], (cmat[:, 0], cmat[:, 1])), shape=(len(snvs), BC))
