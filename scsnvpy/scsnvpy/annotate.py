@@ -259,7 +259,6 @@ class SNVAnnotate(object):
         for b1 in 'ACGT':
             d = self._h5f[f'base_{b1}']
             bids1, sids1, pbases1, mbases1 = map(NP.array, (d['barcode_ids'], d['snps'], d['plus'], d['minus']))
-            print(b1, ((pbases1 + mbases1) == 0).sum())
             for b2 in 'ACGT':
                 if b1 == b2:
                     continue
@@ -314,7 +313,6 @@ class SNVAnnotate(object):
                     else:
                         cmat = NP.vstack([cmat, tmat])
 
-        print("Check: ", ((cmat[:,2] + cmat[:,3]) == 0).sum())
         self.smats = [
             csr_matrix((cmat[:, 2], (cmat[:, 0], cmat[:, 1])), shape=(len(snvs), BC)),
             csr_matrix((cmat[:, 3], (cmat[:, 0], cmat[:, 1])), shape=(len(snvs), BC))
