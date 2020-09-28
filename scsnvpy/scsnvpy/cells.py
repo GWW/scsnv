@@ -94,22 +94,22 @@ def density_scatter(ax, x, y, s=10, cmap=plt.cm.inferno, logx=False, logy=False)
         ax.set_yscale('log', subsy=[2,3,4,5,6,7,8,9])
 
 
-def MT_cutoff(ax, df, key, mads, max_mads):
+def MT_cutoff(ax, df, key, mads, max_mads, max_value):
     mols = df['molecules'].values
     pmt = 100.0 * df[key].values / mols
     md = mad(pmt)
     med = NP.median(pmt)
-    co = min(mads * md, max_mads)
+    co = min(mads * md + med, max_value)
 
     ax.axhline(med, color=plt.cm.Set1.colors[0])
-    ax.axhline(med + co, color=plt.cm.Set1.colors[0], ls='--')
+    ax.axhline(co, color=plt.cm.Set1.colors[0], ls='--')
     density_scatter(ax, mols, pmt, logx=True)
     ax.minorticks_on()
     ax.set_axisbelow(True)
     ax.grid(color='0.5', lw=0.5, ls='--')
     ax.set_xlabel('Molecules')
     ax.set_ylabel('MT (%)')
-    passed = pmt <= (med + co)
+    passed = pmt <= co
     df['passed'] = df['passed'] & passed
     ax.set_title(f'Cutoff = {co + med:.2f}%\nPassed = {passed.sum():,} / {len(df):,}')
 
@@ -178,7 +178,7 @@ def cells_cmd(cargs):
     parser = argparse.ArgumentParser(description='Find barcodes that represent cells')
     parser.add_argument('-u', '--min-umis', help='Minimum number of spliced UMIs for a cell', type=int, default=750)
     parser.add_argument('--mt-mad', help='MT cutoff of median + X * (median absolute deviation)', type=float, default=5)
-    parser.add_argument('--mt-mad-max', help='Maximum MT cutoff difference ie a cap for X * (median absolute deviation)', type=float, default=20)
+    parser.add_argument('--mt-max', help='Maximum MT Percent', type=float, default=25)
     parser.add_argument('--mt-key', help='Gene group name for MT reads', type=str, default='group_MT')
     parser.add_argument('--pcr-mad', help='PCR duplicate cutoff of median - X * (median absolute deviation)', type=float, default=5)
     parser.add_argument('--pcr-mad-max', help='Maximum PCR cutoff difference ie a cap for X * (median absolute deviation)', type=float, default=10)
@@ -237,7 +237,7 @@ def cells_cmd(cargs):
     prates = krates.iloc[:idx].copy()
     prates['passed'] = True
 
-    MT_cutoff(axs[1], prates, args.mt_key, args.mt_mad, args.mt_mad_max)
+    MT_cutoff(axs[1], prates, args.mt_key, args.mt_mad, args.mt_max)
     dups_cutoff(axs[2], prates, args.pcr_mad, args.pcr_mad_max)
     sat_cutoff(axs[3], prates, args.saturation_mad, args.saturation_mad_max)
     barcode_cutoff(axs[4], prates, args.correct_mad, args.correct_mad_max)
