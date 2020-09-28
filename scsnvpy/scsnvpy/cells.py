@@ -94,7 +94,7 @@ def density_scatter(ax, x, y, s=10, cmap=plt.cm.inferno, logx=False, logy=False)
         ax.set_yscale('log', subsy=[2,3,4,5,6,7,8,9])
 
 
-def MT_cutoff(ax, df, key, mads, max_mads, max_value):
+def MT_cutoff(ax, df, key, mads, max_value):
     mols = df['molecules'].values
     pmt = 100.0 * df[key].values / mols
     md = mad(pmt)
