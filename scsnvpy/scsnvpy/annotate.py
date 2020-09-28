@@ -329,8 +329,8 @@ class SNVAnnotate(object):
             i2 = c_amat.data[s:e] > 0
             tb[i] += (i1 | i2).sum()
             bb[i] += (i1 & i2).sum()
-            sr[i] += i1.sum()
-            sa[i] += i2.sum()
+            sr[i] += (i1 & ~i2).sum()
+            sa[i] += (i2 & ~i1).sum()
 
         self._snvs['total_barcodes'] = tb
         self._snvs['ref_strand_barcodes'] = sr
