@@ -111,7 +111,7 @@ def MT_cutoff(ax, df, key, mads, max_value):
     ax.set_ylabel('MT (%)')
     passed = pmt <= co
     df['passed'] = df['passed'] & passed
-    ax.set_title(f'Cutoff = {co + med:.2f}%\nPassed = {passed.sum():,} / {len(df):,}')
+    ax.set_title(f'Cutoff = {co:.2f}%\nPassed = {passed.sum():,} / {len(df):,}')
 
 def dups_cutoff(ax, df, mads, max_mads):
     idx = df['passed'].copy()
