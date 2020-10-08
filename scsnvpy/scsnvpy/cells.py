@@ -97,9 +97,9 @@ def density_scatter(ax, x, y, s=10, cmap=plt.cm.inferno, logx=False, logy=False)
 def MT_cutoff(ax, df, key, mads, max_value, mt_perc):
     mols = df['molecules'].values
     pmt = 100.0 * df[key].values / mols
+    med = NP.median(pmt)
     if mt_perc < 0.0:
         md = mad(pmt)
-        med = NP.median(pmt)
         co = min(mads * md + med, max_value)
     else:
         co = mt_perc
