@@ -94,12 +94,15 @@ def density_scatter(ax, x, y, s=10, cmap=plt.cm.inferno, logx=False, logy=False)
         ax.set_yscale('log', subsy=[2,3,4,5,6,7,8,9])
 
 
-def MT_cutoff(ax, df, key, mads, max_value):
+def MT_cutoff(ax, df, key, mads, max_value, mt_perc):
     mols = df['molecules'].values
     pmt = 100.0 * df[key].values / mols
-    md = mad(pmt)
-    med = NP.median(pmt)
-    co = min(mads * md + med, max_value)
+    if mt_perc < 0.0:
+        md = mad(pmt)
+        med = NP.median(pmt)
+        co = min(mads * md + med, max_value)
+    else:
+        co = mt_perc
 
     ax.axhline(med, color=plt.cm.Set1.colors[0])
     ax.axhline(co, color=plt.cm.Set1.colors[0], ls='--')
@@ -177,6 +180,7 @@ def barcode_cutoff(ax, df, mads, max_mads):
 def cells_cmd(cargs):
     parser = argparse.ArgumentParser(description='Find barcodes that represent cells')
     parser.add_argument('-u', '--min-umis', help='Minimum number of spliced UMIs for a cell', type=int, default=750)
+    parser.add_argument('--mt-perc', help='Set the MT cutoff to this %, set to -1 to enable the automatic cutoff below', type=float, default=25)
     parser.add_argument('--mt-mad', help='MT cutoff of median + X * (median absolute deviation)', type=float, default=5)
     parser.add_argument('--mt-max', help='Maximum MT Percent', type=float, default=25)
     parser.add_argument('--mt-key', help='Gene group name for MT reads', type=str, default='group_MT')
@@ -237,7 +241,7 @@ def cells_cmd(cargs):
     prates = krates.iloc[:idx].copy()
     prates['passed'] = True
 
-    MT_cutoff(axs[1], prates, args.mt_key, args.mt_mad, args.mt_max)
+    MT_cutoff(axs[1], prates, args.mt_key, args.mt_mad, args.mt_max, args.mt_perc)
     dups_cutoff(axs[2], prates, args.pcr_mad, args.pcr_mad_max)
     sat_cutoff(axs[3], prates, args.saturation_mad, args.saturation_mad_max)
     barcode_cutoff(axs[4], prates, args.correct_mad, args.correct_mad_max)
