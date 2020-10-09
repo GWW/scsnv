@@ -2,7 +2,7 @@
 
 scSNV is an alternative to Cell Ranger + velocyto for the alignment, quantification and SNV calling of 10X Single Cell RNA-seq data. Currently, scSNV supports 10X 5-prime and 3-prime 10X version 2 and 3 libraries.
 
-Example python scripts to annotate SNVs, identify barcode tags that represent cells and generate the data from the scSNV manuscript is available at http://github.com/GWW/scsnvpy/.
+Example python scripts to annotate SNVs, identify barcode tags that represent cells and generate the data from the scSNV manuscript is available at http://github.com/GWW/scsnv/scsnvpy/.
 
 For reproducibility the version of Cell Ranger used in our manuscript comparisons is available at [here](https://github.com/GWW/cellranger_211_mirror)
 
