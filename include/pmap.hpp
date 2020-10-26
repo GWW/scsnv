@@ -56,6 +56,8 @@ class ProgMap : public ProgBase {
         size_t                   lwritten_ = 0;
         size_t                   total_ = 0;
         size_t                   start_ = 0;
+        size_t                   downsample_ = 0;
+        size_t                   seed_ = 0;
         unsigned int             threads_;
         unsigned int             qthreads_;
         unsigned int             min_overhang_;

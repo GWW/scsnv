@@ -54,16 +54,12 @@ argagg::parser ProgMap::parser() const {
           "Output prefix", 1},
         { "library", {"-l", "--library"},
           "libary type (V2)", 1},
-        //{ "internal", {"--internal"},
-        //  "Look for internal polyA sites with a length of at least 25 bp with 1 mismatch. Useful when the read lengths are longer than the normal 98 bp", 1},
         { "dust", {"-d", "--dust"},
           "Dust complexity cutoff (-1 to disable, default 4)", 1},
         { "overhang", {"--overhang"},
           "Trim reads with X bp or less of overlap with an exon-intron junction or reads with a terminal splice site of X bp or less", 1},
         { "no_bam", {"--no-bam"},
           "Disable writing the sorted bam files of the countable (ie. uniquely mapped reads)", 0},
-        //{ "wtags", {"--tags"},
-        //  "Write alignment and UMI correction tags (for debugging purposes)", 0},
         { "bam_tmp", {"--bam-tmp"},
           "Temporary directory to store sorted bam files (Default: {out_prefix}_btmp", 1},
         { "cgroups", {"-c", "--count-groups"},
@@ -74,6 +70,10 @@ argagg::parser ProgMap::parser() const {
           "Number of output reads per file (Default: 5000000)", 1},
         { "bam_write", {"--bam-write"},
           "Number of writer threads to use when emitting sorted bam files (Default 1)", 1},
+        { "downsample", {"--downsample"}, 
+            "Downsample the reads to XX reads, 0 to disable (Default: 0)", 1},
+        { "downsample_seed", {"--downsample-seed"}, 
+            "Seed for random down sampling (Default 42)", 1},
       }};
     return argparser;
 }
@@ -93,6 +93,8 @@ void ProgMap::load() {
     qthreads_ = args_["qthreads"].as<unsigned int>(1);
     min_overhang_ = args_["overhang"].as<unsigned int>(5);
     dust_ = args_["dust"].as<double>(4.0);
+    downsample_ = args_["downsample"].as<size_t>(0);
+    seed_ = args_["downsample_seed"].as<size_t>(42);
     bam_write_threads_ = args_["bam_write"].as<unsigned int>(1);
     bam_ = !args_["no_bam"];
     //internal_ = args_["internal"];
@@ -232,7 +234,7 @@ int ProgMap::run_wrap_(){
     if(bam_){
         base.prepare_bam(full_cmd_, bam_per_thread_, bam_per_file_, tmp_bam_, bam_write_threads_);
     }
-    base.run(threads_, fastqs_, dust_, internal_);
+    base.run(threads_, fastqs_, dust_, internal_, downsample_, seed_);
     base.write_output(out_prefix_);
     base.unload();
     total_ = base.total_reads();

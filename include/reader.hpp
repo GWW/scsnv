@@ -24,6 +24,7 @@ SOFTWARE.
 #include <string>
 #include <mutex>
 #include <thread>
+#include <random>
 #include "fastq.hpp"
 #include "misc.hpp"
 #include "aux.hpp"
@@ -104,10 +105,24 @@ class MultiReader{
             reset();
         }
 
+        void set_downsample(double perc, size_t seed){
+            downsample_ = perc;
+            mt_ = std::mt19937(seed);
+            dist_ = std::uniform_real_distribution<double>(0, 1);
+        }
+
+        size_t skipped() const {
+            return skipped_;
+        }
+
     private:
         FastqPairs                 files_;
         T                          in_;
+        std::mt19937               mt_;
+        std::uniform_real_distribution<double> dist_;
         size_t                     curr_ = std::numeric_limits<size_t>::max();
+        size_t                     skipped_ = 0;
+        double                     downsample_;
         std::vector<size_t>        read_;
         std::mutex                 mutex_;
         bool                       verbose_;
@@ -222,6 +237,10 @@ inline unsigned int MultiReader<T>::read_N(size_t N, Reads & reads) {
     if(reads.size() < N) reads.resize(N);    
     size_t i = 0;
     while(i < N && read(reads[i])){
+        if(downsample_ > 0.0 && dist_(mt_) > downsample_){
+            skipped_++;
+            continue;
+        }
         i++;
     }
     reads.resize(i);

@@ -83,7 +83,7 @@ class MapBase {
         void prepare_bam(const std::string & prog_name, unsigned int bam_per_thread, unsigned int bam_per_file, 
                 const std::string & prefix, unsigned int threads);
 
-        void run(unsigned int num_threads, FastqPairs & fastqs, double dust, bool internal);
+        void run(unsigned int num_threads, FastqPairs & fastqs, double dust, bool internal, size_t downsample, size_t seed);
         void write_output(const std::string & prefix);
         void write_tags(const std::string & prefix, const std::vector<UMIMap> & correct, const std::vector<uint32_t> & bidx);
 
@@ -114,6 +114,7 @@ class MapBase {
         GenomeAlign                gna_;
         std::mutex                 mtx_read_;
         std::string                bam_tmp_;
+        double                     ds_ = 0.0;
         size_t                     start_;
         size_t                     total_ = 0;
         size_t                     ltotal_ = 0;
@@ -126,14 +127,26 @@ class MapBase {
 };
 
 template <typename T>
-inline void MapBase<T>::run(unsigned int num_threads, FastqPairs & fastqs, double dust, bool internal) {
+inline void MapBase<T>::run(unsigned int num_threads, FastqPairs & fastqs, double dust, bool internal, size_t downsample, size_t seed) {
     static const unsigned int READS_PER_STEP = 2000;
     internal_ = internal;
-    tout << "Estimated memory needed for alignment tags: " << std::setprecision(2) << std::fixed
-        << (1.0 * sizeof(AlignSummary) * btotal_ / (1024 * 1024 * 1024)) << " GB\n";
     start_ = tout.seconds();
     std::list<MapWorker> threads;
     in_.set_files(fastqs);
+
+
+    if(downsample > 0){
+        double perc = 1.0 * downsample / btotal_;
+        ds_ = perc;
+        in_.set_downsample(perc, seed);
+        tout << "Downsampling to " << downsample << " reads [" << std::fixed << std::setprecision(2) << perc << "% of total reads]\n";
+        tout << "Estimated memory needed for alignment tags: " << std::setprecision(2) << std::fixed
+            << (1.0 * sizeof(AlignSummary) * downsample  / (1024 * 1024 * 1024)) << " GB\n";
+    }else{
+        tout << "Estimated memory needed for alignment tags: " << std::setprecision(2) << std::fixed
+            << (1.0 * sizeof(AlignSummary) * btotal_ / (1024 * 1024 * 1024)) << " GB\n";
+    }
+
     using namespace std::placeholders;
     MapWorker::cb_correct correct_cb = std::bind(&lib_bc::correct, &bc_, _1, _2);
     MapWorker::cb_read read_cb = std::bind(&MapBase<T>::read_, this, _1, _2, _3);
@@ -315,7 +328,7 @@ unsigned int MapBase<T>::read_(size_t N, Reads & reads, const AlignGroup::Result
         counts[i] += rcounts[i];
         total_ += rcounts[i];
     }
-    if((ltotal_ + 1000000) <= total_){
+    if((ltotal_ + 2500000) <= total_){
         size_t sec = tout.seconds();
         double ps = 1.0 * total_ / (sec - start_);
         size_t eta = (btotal_ - total_) / ps;
@@ -340,6 +353,11 @@ unsigned int MapBase<T>::read_(size_t N, Reads & reads, const AlignGroup::Result
             << " MUL: " << std::setprecision(2) << pmulti
             << " UNM: " << std::setprecision(2) << punmapped
             << " QA: " << std::setprecision(2) << pfail;
+        if(ds_ > 0.0){
+            double ps = in_.skipped() / (in_.skipped() + total_);
+            std::cout << " DS SKIPPED: " << std::setprecision(2) << ps << " GOAL = " << ds_;
+
+        }
         std::cout << "\n";
         ltotal_ = total_;
     }
