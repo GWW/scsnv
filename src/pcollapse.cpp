@@ -89,7 +89,7 @@ int ProgCollapse::run_wrap_(){
     unsigned int lreads = 0;
     //unsigned int t2 = 0, t3 = 0, t4 = 0;
     //int lnum = -1;
-    while((t = br.read_genes(*rbuffer, 100)) > 0){
+    while((t = br.read_genes(*rbuffer, threads_)) > 0){
         for(auto & t : threads){
             t.start(rbuffer);
         }
