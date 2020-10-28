@@ -330,7 +330,7 @@ unsigned int MapBase<T>::read_(size_t N, Reads & reads, const AlignGroup::Result
     }
     if((ltotal_ + 2500000) <= total_){
         size_t sec = tout.seconds();
-        size_t total = in_.total();
+        size_t total = total_ + in_.skipped();
         double ps = 1.0 * total / (sec - start_);
         size_t eta = (btotal_ - total) / ps;
         int hours = eta / (60 * 60);
