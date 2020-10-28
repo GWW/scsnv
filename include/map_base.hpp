@@ -354,8 +354,8 @@ unsigned int MapBase<T>::read_(size_t N, Reads & reads, const AlignGroup::Result
             << " UNM: " << std::setprecision(2) << punmapped
             << " QA: " << std::setprecision(2) << pfail;
         if(ds_ > 0.0){
-            double ps = 1.0 * in_.skipped() / (in_.skipped() + total_);
-            std::cout << " DS SKIPPED: " << std::setprecision(2) << ps << " GOAL = " << ds_;
+            double ps = 100.0 * in_.skipped() / (in_.skipped() + total_);
+            std::cout << " DS SKIPPED: " << std::setprecision(2) << ps << " GOAL = " << (100.0 * ds_);
 
         }
         std::cout << "\n";
