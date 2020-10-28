@@ -330,20 +330,21 @@ unsigned int MapBase<T>::read_(size_t N, Reads & reads, const AlignGroup::Result
     }
     if((ltotal_ + 2500000) <= total_){
         size_t sec = tout.seconds();
-        double ps = 1.0 * total_ / (sec - start_);
-        size_t eta = (btotal_ - total_) / ps;
+        size_t total = in_.total();
+        double ps = 1.0 * total / (sec - start_);
+        size_t eta = (btotal_ - total) / ps;
         int hours = eta / (60 * 60);
         int minutes = (eta - (hours * 60 * 60)) / 60;
 
-        double punque = 100.0 * counts[AlignGroup::CDNA] / total_;
-        double piunque = 100.0 * counts[AlignGroup::INTRONIC] / total_;
-        double pinter = 100.0 * counts[AlignGroup::INTERGENIC] / total_;
-        double pambig = 100.0 * counts[AlignGroup::AMBIGUOUS] / total_;
-        double punmapped = 100.0 * (counts[AlignGroup::UNMAPPED] + counts[AlignGroup::UMI_FAIL] + counts[AlignGroup::BARCODE_FAIL]) / total_;
-        double pantisense = 100.0 * counts[AlignGroup::ANTISENSE] / total_;
-        double pmulti = 100.0 * counts[AlignGroup::MULTIMAPPED] / total_;
-        double pfail = 100.0 * counts[AlignGroup::TAG_FAIL] / total_;
-        tout << "Processed " << total_ << " / " << btotal_ << " [" << static_cast<int>(ps) << " / sec], ETA = " 
+        double punque = 100.0 * counts[AlignGroup::CDNA] / total;
+        double piunque = 100.0 * counts[AlignGroup::INTRONIC] / total;
+        double pinter = 100.0 * counts[AlignGroup::INTERGENIC] / total;
+        double pambig = 100.0 * counts[AlignGroup::AMBIGUOUS] / total;
+        double punmapped = 100.0 * (counts[AlignGroup::UNMAPPED] + counts[AlignGroup::UMI_FAIL] + counts[AlignGroup::BARCODE_FAIL]) / total;
+        double pantisense = 100.0 * counts[AlignGroup::ANTISENSE] / total;
+        double pmulti = 100.0 * counts[AlignGroup::MULTIMAPPED] / total;
+        double pfail = 100.0 * counts[AlignGroup::TAG_FAIL] / total;
+        tout << "Processed " << total << " / " << btotal_ << " [" << static_cast<int>(ps) << " / sec], ETA = " 
             << hours << "h " << minutes << "m "
             << " CDNA: " << std::setprecision(2) << punque
             << " PRE: " << std::setprecision(2) << piunque
@@ -354,7 +355,7 @@ unsigned int MapBase<T>::read_(size_t N, Reads & reads, const AlignGroup::Result
             << " UNM: " << std::setprecision(2) << punmapped
             << " QA: " << std::setprecision(2) << pfail;
         if(ds_ > 0.0){
-            double ps = 100.0 * in_.skipped() / (in_.skipped() + total_);
+            double ps = 100.0 * in_.skipped() / (total);
             std::cout << " DS SKIPPED: " << std::setprecision(2) << ps << " GOAL = " << (100.0 * ds_);
 
         }
