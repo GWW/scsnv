@@ -139,7 +139,7 @@ inline void MapBase<T>::run(unsigned int num_threads, FastqPairs & fastqs, doubl
         double perc = 1.0 * downsample / btotal_;
         ds_ = perc;
         in_.set_downsample(perc, seed);
-        tout << "Downsampling to " << downsample << " reads [" << std::fixed << std::setprecision(2) << perc << "% of total reads]\n";
+        tout << "Downsampling to " << downsample << " reads [" << std::fixed << std::setprecision(2) << (100.0 * perc) << "% of total reads]\n";
         tout << "Estimated memory needed for alignment tags: " << std::setprecision(2) << std::fixed
             << (1.0 * sizeof(AlignSummary) * downsample  / (1024 * 1024 * 1024)) << " GB\n";
     }else{
