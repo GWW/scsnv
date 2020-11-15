@@ -122,7 +122,7 @@ class MultiReader{
         std::uniform_real_distribution<double> dist_;
         size_t                     curr_ = std::numeric_limits<size_t>::max();
         size_t                     skipped_ = 0;
-        double                     downsample_;
+        double                     downsample_ = 0.0;
         std::vector<size_t>        read_;
         std::mutex                 mutex_;
         bool                       verbose_;
