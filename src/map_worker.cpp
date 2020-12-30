@@ -159,9 +159,12 @@ void MapWorker::map_(Read & read){
         }
     }
     unsigned int N = (read.tag.size() - end - 1);
+    double dust = (max_dust_ > 0 ? dust_.calculate(read.tag, end + 1) : 0);
     if(N < 6){
         end = read.tag.size() - 1;
-    }else if(N > (read.tag.size() / 2) || (max_dust_ > 0 && dust_.calculate(read.tag, end + 1) < max_dust_)){
+    }
+
+    if(N > (read.tag.size() / 2) || (dust > max_dust_)){
         data.res = AlignGroup::TAG_FAIL;
         bc_rates[barcode_index][AlignGroup::TAG_FAIL]++;
         counts[AlignGroup::TAG_FAIL]++;

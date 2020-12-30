@@ -300,9 +300,14 @@ CollapsedBamWriter::CollapsedBamWriter(const std::string & out, unsigned int bam
 }
 
 CollapsedBamWriter::~CollapsedBamWriter(){
+    close();
+}
+
+void CollapsedBamWriter::close(){
+    if(closed_) return;
+    closed_ = true;
     sam_close(bam_out_);
     bam_hdr_destroy(bh_);
-
     for(auto b : collapsed){
         delete b;
     }

@@ -146,6 +146,7 @@ int ProgCollapse::run_wrap_(){
     tout << "Total Reads Processed = " << std::fixed << rreads << " dups = " << std::fixed << rdups << "\n";
 
     if(started) bout.join();
+    bout.close();
     delete rbuffer;
 
     return EXIT_SUCCESS;

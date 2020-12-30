@@ -52,7 +52,6 @@ void TXIndex::load(const std::string & prefix){
     for(auto & r : refs_){
         ref_map_[r.name] = ridx++;
         if(r.start == r.end) continue;
-        
         Ref::itree::intervalVector values;
         for(size_t i = r.start; i < r.end; i++){
             values.push_back(Ref::itree::interval(genes_[i].lft, genes_[i].rgt, i));

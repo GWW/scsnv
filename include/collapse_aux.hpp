@@ -151,6 +151,7 @@ class CollapsedBamWriter{
         CollapsedBamWriter(const std::string & out, unsigned int bam_write_threads, const bam_hdr_t * bh);
         ~CollapsedBamWriter();
 
+        void close();
         void start();
         void join();
         void operator()();
@@ -161,6 +162,7 @@ class CollapsedBamWriter{
 
     private:
         std::thread              thread_;
+        bool                     closed_ = false;
         samFile                * bam_out_;
         bam_hdr_t              * bh_;
 };

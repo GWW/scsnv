@@ -55,7 +55,7 @@ argagg::parser ProgMap::parser() const {
         { "library", {"-l", "--library"},
           "libary type (V2)", 1},
         { "dust", {"-d", "--dust"},
-          "Dust complexity cutoff (-1 to disable, default 4)", 1},
+          "Dust complexity cutoff (disabled (-1) by default a sane choice is 4)", 1},
         { "overhang", {"--overhang"},
           "Trim reads with X bp or less of overlap with an exon-intron junction or reads with a terminal splice site of X bp or less", 1},
         { "no_bam", {"--no-bam"},
@@ -92,7 +92,7 @@ void ProgMap::load() {
     threads_ = args_["threads"].as<unsigned int>(1);
     qthreads_ = args_["qthreads"].as<unsigned int>(1);
     min_overhang_ = args_["overhang"].as<unsigned int>(5);
-    dust_ = args_["dust"].as<double>(4.0);
+    dust_ = args_["dust"].as<double>(-1);
     downsample_ = args_["downsample"].as<size_t>(0);
     seed_ = args_["downsample_seed"].as<size_t>(42);
     bam_write_threads_ = args_["bam_write"].as<unsigned int>(1);
