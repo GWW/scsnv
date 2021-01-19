@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include "iprocessor.hpp"
+#include "h5misc.hpp"
 
 using namespace gwsc;
 
@@ -95,6 +96,9 @@ void IndexProcessor::operator()(){
                         tsnv.malt = e.bases[alti].m_count;
 
                         if(filter_barcodes_){
+                            for(auto & b : e.bcounts){
+                                calls.push_back(BarcodeCall(b.barcode, xstart->index, b.pbases[refi], b.mbases[refi], b.pbases[alti], b.mbases[refi]));
+                            }
                             tsnv.r_barcodes = e.bases[refi].t_barcodes;
                             tsnv.a_barcodes = e.bases[alti].t_barcodes;
 
@@ -118,9 +122,10 @@ void IndexProcessor::operator()(){
     }
 }
 
-void DataManager::write(const std::string & out, const std::string & header) {
-    gzofstream zout(out);
-    zout << header;
+void DataManager::write(const std::string & out, const std::string & header, const std::vector<std::string> & barcode_ids) {
+    std::string sout = out + ".txt.gz";
+    gzofstream zout(sout);
+    zout << header << "\tsnv_idx_h5";
     bool fbarcodes = processors.front()->fbarcodes();
     if(fbarcodes){
         zout 
@@ -146,9 +151,9 @@ void DataManager::write(const std::string & out, const std::string & header) {
             << "\t" << name << "_alt"
             << "\n";
     }
-    
+
     for(auto & s : snvs){
-        zout << s.line;
+        zout << s.line << "\t" << s.index;
         if(fbarcodes){
             zout
                 << "\t" << s.pref
@@ -177,6 +182,42 @@ void DataManager::write(const std::string & out, const std::string & header) {
         }
     }
     tout << name << " Done!!\n";
+
+    {
+
+        using namespace H5;
+        std::string hout = out + "_barcodes.h5";
+        H5File file(out, H5F_ACC_TRUNC);
+        //H5::Group group(file.createGroup("/barcode_rates"));
+        std::vector<const char *> ctmp;
+        for(auto & b : barcode_ids) ctmp.push_back(b.c_str());
+        write_h5_string("barcodes", ctmp, file);
+
+        std::vector<uint32_t> itmp;
+        for(auto & c : calls) itmp.push_back(c.sindex);
+        write_h5_numeric("snv_id_h5", itmp, file, PredType::NATIVE_UINT32);
+
+        itmp.clear();
+        for(auto & c : calls) itmp.push_back(c.barcode);
+        write_h5_numeric("barcode_ids", itmp, file, PredType::NATIVE_UINT32);
+
+        itmp.clear();
+        for(auto & c : calls) itmp.push_back(c.pref);
+        write_h5_numeric("plus_ref", itmp, file, PredType::NATIVE_UINT32);
+
+        itmp.clear();
+        for(auto & c : calls) itmp.push_back(c.mref);
+        write_h5_numeric("minus_ref", itmp, file, PredType::NATIVE_UINT32);
+
+        itmp.clear();
+        for(auto & c : calls) itmp.push_back(c.palt);
+        write_h5_numeric("plus_alt", itmp, file, PredType::NATIVE_UINT32);
+
+        itmp.clear();
+        for(auto & c : calls) itmp.push_back(c.malt);
+        write_h5_numeric("minus_alt", itmp, file, PredType::NATIVE_UINT32);
+    }
+
 }
 
 void DataManager::run() {
@@ -188,4 +229,9 @@ void DataManager::run() {
     for(size_t i = 0; i < processors.size(); i++){
         processors[i]->join();
     }
+
+    for(auto & p : processors){
+        calls.insert(calls.end(), p->calls.begin(), p->calls.end());
+    }
+    std::sort(calls.begin(), calls.end());
 }

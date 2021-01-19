@@ -109,8 +109,8 @@ class TargetFinder {
 
             }
 
-            Target(unsigned int target, char base)
-                : target(target), base(base)
+            Target(unsigned int target, char base, unsigned int index = 0)
+                : target(target), index(index), base(base)
             {
 
             }
@@ -120,6 +120,7 @@ class TargetFinder {
             }
 
             unsigned int target;
+            unsigned int index;
             char         base = 'N';
         };
 

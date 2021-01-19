@@ -40,7 +40,7 @@ argagg::parser ProgAccuracy::parser() const {
         { "reference", {"-r", "--ref"},
           "Reference Genome File", 1},
         { "output", {"-o", "--output"},
-          "Output file", 1},
+          "Output prefix", 1},
         { "snvs", {"-s", "--snvs"},
           "Tab separated list of strand specific SNVs data from scsnvpy merge command", 1},
         { "window", {"-w", "--window"},
@@ -143,6 +143,7 @@ inline int ProgAccuracy::run_(){
     DataManager data;
 
     std::string tmp, line;
+    unsigned int sidx = 0;
     while(in.get_line(line) >= 0){
         AccSNV snv;
         snv.line = line;
@@ -156,6 +157,7 @@ inline int ProgAccuracy::run_(){
         snv.alt = toks[3][0];
         snv.strand = toks[4][0];
         snv.found = toks[found][0] == '1';
+        snv.index = sidx++;
         data.snvs.push_back(snv);
     }
 
@@ -216,7 +218,7 @@ inline int ProgAccuracy::run_(){
         }
 
 
-        IndexProcessor * pp = new IndexProcessor(iname_, p, idx_, genome_, aligners_[0] != 'D', bam_, bchash_, aligners_[0] != 'G');
+        IndexProcessor * pp = new IndexProcessor(iname_, p, idx_, genome_, aligners_[0] != 'D', bam_, bchash_, barcodes_.size(), aligners_[0] != 'G');
         pp->make_targets(data.snvs);
         pp->worker().set_params(min_alternative_, min_qual_, min_barcodes_, min_edge_, splice_win_, min_af_, &pp->targets());
         data.processors[i] = pp;
@@ -224,7 +226,7 @@ inline int ProgAccuracy::run_(){
 
     std::cout << "Running\n";
     data.run();
-    data.write(outp_, header);
+    data.write(outp_, header, barcodes_);
     return 0;
 }
 

@@ -62,6 +62,7 @@ struct AccSNV{
     std::string chrom;
     std::string line;
     unsigned int pos;
+    unsigned int index;
     char ref;
     char alt;
     char strand;
@@ -93,11 +94,32 @@ struct AccSNVGroup{
     size_t                        end_pos;
 };
 
+struct BarcodeCall{
+    BarcodeCall(){
+    }
+
+    BarcodeCall(uint32_t barcode, uint32_t sindex, uint32_t pref, uint32_t mref, uint32_t palt, uint32_t malt)
+        :barcode(barcode), sindex(sindex), pref(pref), mref(mref), palt(palt), malt(malt)
+    {
+    }
+
+    bool operator<(const BarcodeCall & b) const {
+        return std::tie(sindex, barcode) < std::tie(b.sindex, b.barcode);
+    }
+
+    uint32_t barcode;
+    uint32_t sindex;
+    uint32_t pref = 0;
+    uint32_t mref = 0;
+    uint32_t palt = 0;
+    uint32_t malt = 0;
+};
+
 class IndexProcessor{
     public:
         using getrange = std::function<std::pair<size_t, size_t>(size_t)>;
         IndexProcessor(const std::string & name, ProcessorBase * processor, const TXIndex & index, Fastas & genome, bool use_dups, 
-                std::string & bam_file, const spp::sparse_hash_map<std::string, unsigned int> & bchash, bool filter_barcodes) 
+                std::string & bam_file, const spp::sparse_hash_map<std::string, unsigned int> & bchash, size_t BC, bool filter_barcodes) 
             : bchash_(bchash), name_(name), processor_(processor), pileup_(bchash.size(), index, genome, use_dups), filter_barcodes_(filter_barcodes)
 
         {
@@ -105,6 +127,7 @@ class IndexProcessor{
             bf_ = sam_open(bam_file.c_str(), "r");
             bh_ = sam_hdr_read(bf_);
             bi_ = sam_index_load(bf_, bam_file.c_str());
+            barcodes_ = BC;
             targets_.resize(genome.size());
 
             if(bi_ == NULL){
@@ -114,9 +137,11 @@ class IndexProcessor{
         }
 
         void make_targets(const std::vector<AccSNV> & snvs){
+            total_targets_ = 0;
             for(auto & s : snvs){
                 int tid = bam_name2id(bh_, s.chrom.c_str());
-                targets_[tid].push_back(TargetFinder::Target(s.pos, s.alt));
+                targets_[tid].push_back(TargetFinder::Target(s.pos, s.alt, s.index));
+                total_targets_ = std::max(s.index, total_targets_);
             }
         }
 
@@ -170,6 +195,8 @@ class IndexProcessor{
 
         void operator()();
 
+        std::vector<BarcodeCall>     calls;
+
     private:
         std::thread                  thread_;
         const spp::sparse_hash_map<std::string, unsigned int> & bchash_;
@@ -187,6 +214,8 @@ class IndexProcessor{
         samFile                    * bf_ = nullptr;
         unsigned int                 curr_ = 0;
         unsigned int                 read_ = 0;
+        unsigned int                 total_targets_ = 0;
+        unsigned int                 barcodes_ = 0;
         int                          tid_ = -1;
         bool                         filter_barcodes_ = false;
 };
@@ -218,7 +247,8 @@ struct DataManager{
     }
 
     void run();
-    void write(const std::string & out, const std::string & header);
+    void write(const std::string & out, const std::string & header, const std::vector<std::string> & barcode_ids);
+    std::vector<BarcodeCall>     calls;
 };
 
 }

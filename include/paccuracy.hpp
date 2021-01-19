@@ -42,7 +42,7 @@ class ProgAccuracy : public ProgBase {
 
     private:
         template <typename B>
-        int run_();        
+        int run_();
         void read_passed_(unsigned int blength);
 
         spp::sparse_hash_map<std::string, unsigned int>    bchash_;
