@@ -244,7 +244,7 @@ def merge_results_cmd(args):
     from .snvcmp import GroupBuilder
     parser = argparse.ArgumentParser(description='Merge SNVs from multiple VCFs and annotated SNV samples')
     parser.add_argument('-o', '--output', help='Output text file (can be gz)', type=str, required=True)
-    parser.add_argument('-c', '--cols', help='Columns to add from merged data', type=str, required=False, default='captured,germline,edit,g1000,transition,transversion,group,snv_idx_h5')
+    parser.add_argument('-c', '--cols', help='Columns to add from merged data', type=str, required=False, default='captured,germline,edit,g1000,transition,transversion,group')
     parser.add_argument('-a', '--aligners', help='Use these aligner prefixes to extract strand-specific count data ie. genome,scsnv,cellranger,starsolo', type=str, required=True)
     parser.add_argument('prefix', help='Result file prefix will merge data from all files', type=str)
     args = parser.parse_args(args[1:])
@@ -254,7 +254,7 @@ def merge_results_cmd(args):
     sfile = '{args.prefix}.txt.gz'
     res = None
     aligners = list(args.aligners.split(','))
-    for f in sorted(glob.glob(args.prefix + '_*')):
+    for f in sorted(glob.glob(args.prefix + '_*.txt.gz')):
         if '_snvs' in f:
             mfile = f
             continue
