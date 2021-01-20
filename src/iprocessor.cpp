@@ -183,7 +183,7 @@ void DataManager::write(const std::string & out, const std::string & header, con
     }
     tout << name << " Done!!\n";
 
-    {
+    if(fbarcodes){
 
         using namespace H5;
         std::string hout = out + "_barcodes.h5";
