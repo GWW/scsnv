@@ -187,7 +187,7 @@ void DataManager::write(const std::string & out, const std::string & header, con
 
         using namespace H5;
         std::string hout = out + "_barcodes.h5";
-        H5File file(out, H5F_ACC_TRUNC);
+        H5File file(hout, H5F_ACC_TRUNC);
         //H5::Group group(file.createGroup("/barcode_rates"));
         std::vector<const char *> ctmp;
         for(auto & b : barcode_ids) ctmp.push_back(b.c_str());
