@@ -159,7 +159,7 @@ void MapWorker::map_(Read & read){
         }
     }
     unsigned int N = (read.tag.size() - end - 1);
-    double dust = (max_dust_ > 0 ? dust_.calculate(read.tag, end + 1) : 0);
+    double dust = (max_dust_ >= 0 ? dust_.calculate(read.tag, end + 1) : -1);
     if(N < 6){
         end = read.tag.size() - 1;
     }

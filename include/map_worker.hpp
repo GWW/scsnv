@@ -88,7 +88,6 @@ class MapWorker {
         const TranscriptAlign                                  * tx_align = nullptr;
         const GenomeAlign                                      * genome_align = nullptr;
         const TXIndex                                          * tx_idx = nullptr;
-        
 
         unsigned int                                             barcode_correct = 0;
         unsigned int                                             barcode_corrected = 0;
