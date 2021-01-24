@@ -43,10 +43,10 @@ gwsc::FastqPairs gwsc::find_fastq_files(std::vector<std::string> & dirs) {
 
 gwsc::FastqPairs gwsc::find_fastq_files(const std::string & dir) {
     FastqPairs files;
-    auto r1 = glob(dir + "/*_R1_*.fastq.gz");
-    auto r2 = glob(dir + "/*_R2_*.fastq.gz");
-    auto i1 = glob(dir + "/*_I1_*.fastq.gz");
-    auto i2 = glob(dir + "/*_I2_*.fastq.gz");
+    auto r1 = glob(dir + "/*_R1_[0-9][0-9][0-9].fastq.gz");
+    auto r2 = glob(dir + "/*_R2_[0-9][0-9][0-9].fastq.gz");
+    auto i1 = glob(dir + "/*_I1_[0-9][0-9][0-9].fastq.gz");
+    auto i2 = glob(dir + "/*_I2_[0-9][0-9][0-9].fastq.gz");
     std::sort(r1.begin(), r1.end(), ReadStringCmp());
     std::sort(r2.begin(), r2.end(), ReadStringCmp());
     for(size_t i = 0; i < r1.size(); i++){
