@@ -16,8 +16,8 @@ def merge_samples(samples, groups):
     mcols = [
        'ref_strand_count', 'alt_strand_count', 'strand_AF', 
        'total_barcodes', 
-       'strand_ref_barcodes',
-       'strand_alt_barcodes', 'snv_idx'
+       'ref_strand_barcodes',
+       'alt_strand_barcodes', 'snv_idx'
    ]
    
     print(f'Merging {len(samples)} Dataframes Annotation Data')

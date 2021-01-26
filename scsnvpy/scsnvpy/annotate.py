@@ -301,7 +301,7 @@ class SNVAnnotate(object):
 
                     rmat = merge_coo_dups(rmat)
                     amat = merge_coo_dups(amat)
-                    
+
                     tmat = NP.zeros((amat.shape[0], 4), dtype='int32')
                     tmat[:,0] = amat[:,0]
                     tmat[:,1] = amat[:,1]
