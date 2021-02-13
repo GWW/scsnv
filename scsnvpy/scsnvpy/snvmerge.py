@@ -244,7 +244,7 @@ def merge_results_cmd(args):
     from .snvcmp import GroupBuilder
     parser = argparse.ArgumentParser(description='Merge SNVs from multiple VCFs and annotated SNV samples')
     parser.add_argument('-o', '--output', help='Output text file (can be gz)', type=str, required=True)
-    parser.add_argument('-c', '--cols', help='Columns to add from merged data', type=str, required=False, default='strand,ref,alt,captured,germline,edit,g1000,transition,transversion,group')
+    parser.add_argument('-c', '--cols', help='Columns to add from merged data', type=str, required=False, default='strand,captured,germline,edit,g1000,transition,transversion,group')
     parser.add_argument('-a', '--aligners', help='Use these aligner prefixes to extract strand-specific count data ie. genome,scsnv,cellranger,starsolo', type=str, required=True)
     parser.add_argument('prefix', help='Result file prefix will merge data from all files', type=str)
     args = parser.parse_args(args[1:])
@@ -297,7 +297,8 @@ def merge_results_cmd(args):
             sdata[:, 1] = df[f'{aln}_alt' if f'{aln}_alt' in df else f'{aln}_alf'].values
 
         if res is None:
-            cols_to_use = df.columns[:-14]
+            idx = NP.where(df.columns == 'snv_idx_h5')[0][0]
+            cols_to_use = df.columns[:idx + 1]
             res = df[cols_to_use].copy()
         if scell:
             names = ['ref', 'alt', 'ref_barcodes', 'alt_barcodes', 'ref_alt_barcodes', 'total_barcodes']
