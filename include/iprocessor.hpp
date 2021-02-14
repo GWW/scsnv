@@ -65,8 +65,8 @@ struct AccSNV{
     unsigned int index;
     char ref;
     char alt;
-    char strand;
-    bool found = false;
+    //char strand;
+    //bool found = false;
     uint32_t pref= 0;
     uint32_t palt= 0;
     uint32_t mref= 0;

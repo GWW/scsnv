@@ -42,7 +42,7 @@ argagg::parser ProgAccuracy::parser() const {
         { "output", {"-o", "--output"},
           "Output prefix", 1},
         { "snvs", {"-s", "--snvs"},
-          "Tab separated list of strand specific SNVs data from scsnvpy merge command", 1},
+          "Tab separated list of SNVs data from scsnvpy merge command", 1},
         { "window", {"-w", "--window"},
           "Group SNVs that are within a X bp window (Default: 100)", 1},
         { "library", {"-l", "--library"},
@@ -120,9 +120,10 @@ inline int ProgAccuracy::run_(){
     FileWrapper in(isnvs_);
     std::string header;
     in.get_line(header);
-    std::cout << "Header: " << header << "\n";
+    //std::cout << "Header: " << header << "\n";
     Tokenizer::tokens toks;
-    size_t found = std::numeric_limits<size_t>::max();
+    //size_t found = std::numeric_limits<size_t>::max();
+    /*
     {
         std::string tmp = header;
         Tokenizer tk(tmp, '\t');
@@ -135,10 +136,11 @@ inline int ProgAccuracy::run_(){
             }
         }
     }
+    */
 
-    if(found == std::numeric_limits<size_t>::max()){
-        throw std::runtime_error("The name argument must match a column in the SNV file");
-    }
+    //if(found == std::numeric_limits<size_t>::max()){
+    //    throw std::runtime_error("The name argument must match a column in the SNV file");
+    //}
 
     DataManager data;
 
@@ -155,8 +157,8 @@ inline int ProgAccuracy::run_(){
         snv.pos = pos;
         snv.ref = toks[2][0];
         snv.alt = toks[3][0];
-        snv.strand = toks[4][0];
-        snv.found = toks[found][0] == '1';
+        //snv.strand = toks[4][0];
+        //snv.found = toks[found][0] == '1';
         snv.index = sidx++;
         data.snvs.push_back(snv);
     }
