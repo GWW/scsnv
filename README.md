@@ -159,24 +159,24 @@ The pileup file can be annotated with various databases using the scsnvmisc anno
 scsnvmisc merge -n scsnv -n cellranger --vcf <snvs>.vcf -o sample/merged scsnv/pileup cellranger/pileup
 ```
 
-A -n argument is required for each alignment method. 
+A -n argument is required for each alignment method. This will generate a merged SNV file that can be used to calculate strand specific reference and alternative alelle counts for each of the SNVs.  This will remove sites that are not biallelic.
 
 #### accuracy -- Calculate barcode counts and coverage information for the SNVs in the file outputted by the merge command
 ##### Command:
 ```bash
-scsnv accuracy -n genome -a G -b sample/passed_barcodes.txt.gz -r genome_fasta -i index_prefix -o sample/accuracy_genome.txt.gz -s sample/merged.txt.gz -l V2 WGS.bam
-scsnv accuracy -n scsnv -a S -b sample/passed_barcodes.txt.gz -r genome_fasta -i index_prefix -o sample/accuracy_scsnv.txt.gz -s sample/merged.txt.gz -l V2 collapsed.bam
-scsnv accuracy -n scsnv_merged -a D -b sample/passed_barcodes.txt.gz -r genome_fasta -i index_prefix -o sample/accuracy_scsnv_merged.txt.gz -s sample/merged.txt.gz -l V2 collapsed.bam
+scsnv accuracy -n genome -a G -b sample/passed_barcodes.txt.gz -r genome_fasta.fa -i index_prefix -o sample/accuracy_genome.txt.gz -s sample/merged.txt.gz -l V2 WGS.bam
+scsnv accuracy -n scsnv -a S -b sample/passed_barcodes.txt.gz -r genome_fasta.fa -i index_prefix -o sample/accuracy_scsnv.txt.gz -s sample/merged.txt.gz -l V2 collapsed.bam
+
+scsnv accuracy -n scsnv_merged -a D -b sample/passed_barcodes.txt.gz -r genome_fasta.fa -i index_prefix -o sample/accuracy_scsnv_merged.txt.gz -s sample/merged.txt.gz -l V2 merged.bam
 
 scsnv accuracy -n cellranger -a C -b sample/passed_barcodes.txt.gz -r genome_fasta -i index_prefix -o sample/accuracy_cellranger.txt.gz -s sample/merged.txt.gz -l V2 cellranger/outs/possorted_genome_bam.bam
 ```
+These commands will also generate SNV x cell count matrices similar to the pileup command.
+
 #### results -- Merge the results from multiple scsnv accuracy runs
 
 scsnvmisc results -o results.txt.gz sample/accuracy
 
 The output file will contain merged counts from all of the files as well as some useful annotations from the merged_snvs.txt.gz file that was generated from the merge command. This command will read all files with the prefix ```sample/accuracy_*.txt.gz``` and merge them together
 
-
-
-More documentation on the output formats and optional commands forthcoming 
-
+This will output a file with all of the SNV counts from all of the tools.  
