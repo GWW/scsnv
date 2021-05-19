@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2020 Gavin W. Wilson
+Copyright (c) 2018-2021 Gavin W. Wilson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,10 +37,12 @@ struct Fasta{
     std::string name;
     std::string comment;
     Sequence seq;
+    int      tid = -1;
     void clear() {
         name.clear();
         seq.clear();
         comment.clear();
+        tid = -1;
     }
 };
 
@@ -94,13 +96,15 @@ class FastaReader {
             if(buffer->get_until(0, name) < 0){
                 return false;
             }
-            if(*std::next(buffer->begin, -1) != '\n'){
-                buffer->get_until('\n', comment);
+
+            char prev = *std::next(buffer->begin, -1);
+            if(prev != '\n' && prev != '\r'){
+                buffer->get_until(-1, comment);
             }
-        
+
             char c = buffer->peek_char();
             while(c != -1 && c != '>'){
-                buffer->get_until('\n', seq);
+                buffer->get_until(-1, seq);
                 c = buffer->peek_char();
             }
             return true;

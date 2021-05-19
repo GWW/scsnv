@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2020 Gavin W. Wilson
+Copyright (c) 2018-2021 Gavin W. Wilson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -118,12 +118,24 @@ class BufferBase {
                 }
             }
             std::string::iterator it;
-            if(c != 0){
+            if(c > 0){
                 it = std::find_if(begin, buffer.end(), [c](char v){ return c == v;});
+                out.append(begin, it);
+            }else if(c == -1){
+                it = std::find_if(begin, buffer.end(), [](char v){ return (v == '\r' || v == '\n');});
+                if(it != buffer.end() && *it == '\r'){
+                    auto next = std::next(it);
+                    if(next != buffer.end() && *next == '\n'){
+                        out.append(begin, it);
+                        it++;
+                    }
+                }else{
+                    out.append(begin, it);
+                }
             }else{
                 it = std::find_if(begin, buffer.end(), [](char v){ return isspace(v);});
+                out.append(begin, it);
             }
-            out.append(begin, it);
             if(it != buffer.end()) {
                 begin = ++it;
                 break;
@@ -178,11 +190,17 @@ class BufferBase {
                 }
             }
             std::string::iterator it;
-            it = std::find_if(begin, buffer.end(), [delim](char v){ return v == delim || v == '\n';});
+            it = std::find_if(begin, buffer.end(), [delim](char v){ return v == delim || v == '\n' || v == '\r';});
             toks[i].append(begin, it);
             if(it != buffer.end()){
-                if(*it == '\n') {
+                if(*it == '\n'){
                     begin = ++it;
+                    break;
+                }else if(*it == '\r'){
+                    begin = ++it;
+                    if(begin != buffer.end() && *begin == '\n'){
+                        begin++;
+                    }
                     break;
                 }
                 begin = ++it;
@@ -205,7 +223,7 @@ class GzipBuffer : public BufferBase {
 
     gzFile      fp;
 
-    bool bopen(const std::string & fin){
+    bool bopen(const std::string & fin){begin++;
         fp = gzopen(fin.c_str(), "r");
         buffer.resize(BUFF_SIZE);
         init();
@@ -320,7 +338,7 @@ class FileWrapper {
     template <typename T>
     int get_line(T & out){
         out.clear();
-        return buffer->get_until('\n', out);
+        return buffer->get_until(-1, out);
     }
 
     int tokenize_line(ParserTokens & toks, char delim='\t'){
