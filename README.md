@@ -55,7 +55,13 @@ scsnv index -g genes.gtf -r genome.fa index_prefix
 scsnv count -o sample/barcode  -k scsnv/data/737K-august-2016.txt -l V2 sample/run1
 
 #Map the reads, quantify gene expression, and write the sorted mRNA-tag alignments
-#See below regarding the gene_group file
+#The -i option must be the path to the index_prefix used with scsnv_index
+#The -g option should be to the genome fasta file indexex with bwa mem 
+#The group file (-c option) lists genes of interest.  The find optimal number of cells command uses it to measure mitochondrial expression
+#The group file is a tab delimited file with a header, for example:
+#gene_id<tab>group
+#ENSG00000211459<tab>MT
+
 scsnv map -l V2 -i index_prefix -g bwa_genome_index -b sample/barcode -t 24 --bam-write 4 -q 4 -c index_prefix/gene_groups.txt -o sample/ sample/run1
 
 #Collapse the mRNA-tags into collapsed molecules
