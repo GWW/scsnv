@@ -45,7 +45,16 @@ Where sample is the name you wish to use for your sample and run1 is the name yo
 ## Example alignment and pileup for one sample
 
 This assumes a 10X V2 3'-library using the 737K barcode set from 10X genomics.  For V3 libraries you need to use the 3M set.
-This assumes you have already indexed the genome fasta file with BWA.
+This assumes you have already indexed the genome fasta file with BWA. The library type should be specified for each of the commands as:
+
+```
+10X V2 3-prime:   -l V2
+10X V3 3-prime:   -l V3
+10X V2 5-prime:   -l V2_5P
+10X V3 5-prime:   -l V3_5P
+```
+
+The list of available barcodes must also be specified.  For v2 libraries this is the `737k-august-2016.txt` file and for v3 libraries the `3M-february-2018` file.
 
 ```bash
 #Build the index, only required once
@@ -59,8 +68,10 @@ scsnv count -o sample/barcode  -k scsnv/data/737K-august-2016.txt -l V2 sample/r
 #The -g option should be to the genome fasta file indexex with bwa mem 
 #The group file (-c option) lists genes of interest.  The find optimal number of cells command uses it to measure mitochondrial expression
 #The group file is a tab delimited file with a header, for example:
+#There is an example file for human ensembl 94 in the data/gene_groups.txt
 #gene_id<tab>group
 #ENSG00000211459<tab>MT
+
 
 scsnv map -l V2 -i index_prefix -g bwa_genome_index -b sample/barcode -t 24 --bam-write 4 -q 4 -c index_prefix/gene_groups.txt -o sample/ sample/run1
 
