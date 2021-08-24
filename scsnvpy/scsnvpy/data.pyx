@@ -39,7 +39,7 @@ def load_barcode_rates(fname, full = False):
 
         data = {'barcode':NP.array(h5f.get('barcodes')), 'barcode_id':NP.array(h5f.get('barcode_ids'))}
         for k in brates['field_order']:
-            if typeof(k) == bytes:
+            if type(k) == bytes:
                 k = k.decode('utf-8')
             data[k] = NP.array(brates[k])
         df = pd.DataFrame(data)
