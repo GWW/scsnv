@@ -43,7 +43,7 @@ def load_barcode_rates(fname, full = False):
                 k = k.decode('utf-8')
             data[k] = NP.array(brates[k])
         df = pd.DataFrame(data)
-        if type(df['barcode'].values[0]) == bytes):
+        if type(df['barcode'].values[0]) == bytes:
             df['barcode'] = df['barcode'].str.decode('utf-8')
         return df
 
