@@ -39,8 +39,13 @@ def load_barcode_rates(fname, full = False):
 
         data = {'barcode':NP.array(h5f.get('barcodes')), 'barcode_id':NP.array(h5f.get('barcode_ids'))}
         for k in brates['field_order']:
+            if typeof(k) == bytes:
+                k = k.decode('utf-8')
             data[k] = NP.array(brates[k])
-        return pd.DataFrame(data)
+        df = pd.DataFrame(data)
+        if type(df['barcode'].values[0]) == bytes):
+            df['barcode'] = df['barcode'].str.decode('utf-8')
+        return df
 
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
