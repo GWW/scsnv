@@ -23,7 +23,7 @@ SOFTWARE.
 #include "align_aux.hpp"
 #include "index.hpp"
 #include "genome_align.hpp"
-#include "bwa/bwamem.h"
+#include "bwamem.h"
 
 namespace gwsc {
 
