@@ -1,9 +1,6 @@
 [submodule "src/argagg"]
 	path = external/argagg
 	url = https://github.com/vietjtnguyen/argagg
-[submodule "src/bwa"]
-	path = external/bwa
-	url = https://github.com/lh3/bwa
 [submodule "src/htslib"]
 	path = external/htslib
 	url = https://github.com/samtools/htslib
