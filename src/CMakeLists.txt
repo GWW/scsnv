@@ -10,7 +10,7 @@
 
 SET(HTS_LIBRARY ${EXTERNAL_DIR}/htslib/libhts.a)
 add_custom_command(OUTPUT ${HTS_LIBRARY}
-    COMMAND autoreconf -i && ./configure CC=${CMAKE_C_COMPILER} && make
+    COMMAND autoreconf -i && ./configure --without-libdeflate CC=${CMAKE_C_COMPILER} && make
                    WORKING_DIRECTORY ${EXTERNAL_DIR}/htslib
 )
 
