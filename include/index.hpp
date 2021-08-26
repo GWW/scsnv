@@ -25,7 +25,7 @@ SOFTWARE.
 #include "align_aux.hpp"
 #include "reader.hpp"
 #include "interval_tree.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <unordered_map>
 #include <vector>
 namespace gwsc {
@@ -126,8 +126,8 @@ class TXIndex {
         void merge_(AlignGroup & d) const;
 
         std::vector<GeneEntry>                          genes_;
-        spp::sparse_hash_map<std::string, unsigned int> gidmap_;
-        spp::sparse_hash_map<std::string, unsigned int> ref_map_;
+        phmap::flat_hash_map<std::string, unsigned int> gidmap_;
+        phmap::flat_hash_map<std::string, unsigned int> ref_map_;
         std::vector<TranscriptEntry>                    transcripts_;
         std::vector<Ref>                                refs_;
         bool                                            genome_;

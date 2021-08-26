@@ -28,7 +28,7 @@ SOFTWARE.
 #include <algorithm>
 #include <iostream>
 #include "gzstream.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 
 namespace gwsc {
 
@@ -104,7 +104,7 @@ struct ReadBaseHist{
 
     }
 
-    spp::sparse_hash_map<uint64_t, std::vector<uint32_t>> counts;
+    phmap::flat_hash_map<uint64_t, std::vector<uint32_t>> counts;
     std::vector<std::pair<uint32_t, uint32_t>> bmaxes;
 };
 

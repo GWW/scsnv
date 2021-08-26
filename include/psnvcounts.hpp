@@ -24,6 +24,7 @@ SOFTWARE.
 #include "pbase.hpp"
 #include "index.hpp"
 #include "tokenizer.hpp"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <exception>
 
 namespace gwsc{
@@ -128,8 +129,8 @@ class ProgSNVCounts : public ProgBase {
         void write_map_(const std::string & out);
         void read_passed_(unsigned int blength);
         unsigned int count_dups_(std::string & xr);
-        spp::sparse_hash_map<std::string, unsigned int>           bchash_;
-        spp::sparse_hash_map<uint64_t, std::array<uint32_t, 4>>   snvpairs_;
+        phmap::flat_hash_map<std::string, unsigned int>           bchash_;
+        phmap::flat_hash_map<uint64_t, std::array<uint32_t, 4>>   snvpairs_;
         std::vector<std::pair<unsigned int, unsigned int>>        positions_;
         std::string              iprefix_;
         std::string              lib_;

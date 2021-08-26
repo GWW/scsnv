@@ -33,6 +33,7 @@ SOFTWARE.
 #include "htslib/htslib/hts.h"
 #include "htslib/htslib/thread_pool.h"
 #include "htslib/htslib/sam.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 
 using namespace gwsc;
 
@@ -279,7 +280,7 @@ int ProgMap::run_wrap_(){
 
     start_ = tout.seconds();
 
-    spp::sparse_hash_map<std::string, size_t> bhash;
+    phmap::flat_hash_map<std::string, size_t> bhash;
     std::vector<bool> ccheck(umi_correct.size());
     for(size_t i = 0; i < bstrings.size(); i++) bhash[bstrings[i]] = i;
     std::string  d = tmp_bam_ + "/scsnv_tmp_*.bam";

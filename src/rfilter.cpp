@@ -1,5 +1,4 @@
 
-#include "sparsepp/sparsepp/spp.h"
 #include <unordered_map>
 #include <zlib.h>
 #include <fstream>
@@ -8,6 +7,7 @@
 #include "tokenizer.hpp"
 #include "sbam_merge.hpp"
 #include "gzstream.hpp"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include "htslib/htslib/hts_endian.h"
 using namespace gwsc;
 

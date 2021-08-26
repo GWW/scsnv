@@ -26,6 +26,7 @@ SOFTWARE.
 #include "htslib/htslib/sam.h"
 #include "index.hpp"
 #include "reader.hpp"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include "bam_genes_aux.hpp"
 #include "fasta.hpp"
 #include "pileup_worker.hpp"
@@ -119,7 +120,7 @@ class IndexProcessor{
     public:
         using getrange = std::function<std::pair<size_t, size_t>(size_t)>;
         IndexProcessor(const std::string & name, ProcessorBase * processor, const TXIndex & index, Fastas & genome, bool use_dups, 
-                std::string & bam_file, const spp::sparse_hash_map<std::string, unsigned int> & bchash, size_t BC, bool filter_barcodes) 
+                std::string & bam_file, const phmap::flat_hash_map<std::string, unsigned int> & bchash, size_t BC, bool filter_barcodes) 
             : bchash_(bchash), name_(name), processor_(processor), pileup_(bchash.size(), index, genome, use_dups), filter_barcodes_(filter_barcodes)
 
         {
@@ -199,7 +200,7 @@ class IndexProcessor{
 
     private:
         std::thread                  thread_;
-        const spp::sparse_hash_map<std::string, unsigned int> & bchash_;
+        const phmap::flat_hash_map<std::string, unsigned int> & bchash_;
         getrange                     getrange_;
         std::string                  name_;
         ProcessorBase              * processor_ = nullptr;

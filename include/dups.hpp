@@ -24,7 +24,7 @@ SOFTWARE.
 #include "align_aux.hpp"
 #include "dfix.hpp"
 #include "sequence.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <cassert>
 #include <stack>
 #include <iomanip>
@@ -151,8 +151,8 @@ class DupGraph {
 
 template <typename N, typename A>
 class Dedup {
-    using umi_map = spp::sparse_hash_map<uint32_t, uint32_t>; 
-    using group_hash = spp::sparse_hash_map<uint32_t, std::vector<uint32_t>>;
+    using umi_map = phmap::flat_hash_map<uint32_t, uint32_t>; 
+    using group_hash = phmap::flat_hash_map<uint32_t, std::vector<uint32_t>>;
     Dedup(const Dedup & d) = delete;
     Dedup & operator=(const Dedup & d) = delete;
 

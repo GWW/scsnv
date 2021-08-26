@@ -24,7 +24,7 @@ SOFTWARE.
 #include "bam_genes.hpp"
 #include "pileup.hpp"
 #include "fasta.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include "pileup_aux.hpp"
 #include <thread>
 
@@ -136,7 +136,7 @@ class PileupWorker {
         std::vector<PileupOut>                                        out_;
         std::vector<uint32_t>                                         gids_;
         std::string                                                   tmp_;
-        spp::sparse_hash_map<uint32_t, std::array<uint16_t, 8>>       bcounter_;
+        phmap::flat_hash_map<uint32_t, std::array<uint16_t, 8>>       bcounter_;
 
         unsigned int                                                  min_alternative_ = 10;
         unsigned int                                                  min_qual_ = 20;

@@ -27,7 +27,7 @@ SOFTWARE.
 #include "map_worker.hpp"
 #include "gzstream.hpp"
 #include "pmap.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include "sbam_writer.hpp"
 #include "transcript_align.hpp"
 #include "genome_align.hpp"

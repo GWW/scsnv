@@ -23,7 +23,7 @@ SOFTWARE.
 
 #include "align_aux.hpp"
 #include "sequence.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <cassert>
 #include <iomanip>
 #include <vector>
@@ -202,7 +202,7 @@ struct TagFixer{
         std::vector<unsigned int>                      gcounts_;
         std::vector<T>                                 bad_tags_;
         //std::vector<unsigned int>                      gids;
-        //spp::sparse_hash_map<uint32_t, size_t>         greads_;
+        //phmap::flat_hash_map<uint32_t, size_t>         greads_;
 };
 
 }

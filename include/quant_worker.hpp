@@ -23,7 +23,7 @@ SOFTWARE.
 
 #include "index.hpp"
 #include "pmap.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include "dups.hpp"
 #include <exception>
 #include <list>
@@ -36,7 +36,7 @@ namespace gwsc {
 // In the future maybe make this a template?
 class QuantBase {
     public:
-        using group_hash = spp::sparse_hash_map<uint32_t, std::vector<uint32_t> >;
+        using group_hash = phmap::flat_hash_map<uint32_t, std::vector<uint32_t> >;
 
         QuantBase() {
 

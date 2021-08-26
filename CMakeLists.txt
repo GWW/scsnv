@@ -22,4 +22,5 @@ MESSAGE( "INSTALL PREFIX: ${CMAKE_INSTALL_PREFIX}" )
 
 SET( EXTERNAL_DIR "${PROJECT_SOURCE_DIR}/external" )
 
+#add_subdirectory("bwa")
 add_subdirectory("src")

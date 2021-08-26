@@ -26,8 +26,8 @@ SOFTWARE.
 #include "barcodes.hpp"
 #include "gzstream.hpp"
 #include "pmap.hpp"
-#include "sparsepp/sparsepp/spp.h"
 #include "sbam_writer.hpp"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include "dust.hpp"
 #include "transcript_align.hpp"
 #include "genome_align.hpp"
@@ -77,7 +77,7 @@ class MapWorker {
 
         void operator()();
 
-        spp::sparse_hash_map<AlignSummary::bint, AlignGroup::ResultCounts> bc_rates;
+        phmap::flat_hash_map<AlignSummary::bint, AlignGroup::ResultCounts> bc_rates;
         std::vector<AlignSummary>                                aligns;
         AlignGroup::ResultCounts                                 counts;
         SortedBamWriter::read_buffer                             buff;

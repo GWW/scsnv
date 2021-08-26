@@ -26,6 +26,7 @@ SOFTWARE.
 #include <vector>
 #include <ostream>
 #include <sstream>
+#include <limits>
 #include "interval_tree.hpp"
 #include "bwa/bwamem.h"
 #include "htslib/htslib/sam.h"

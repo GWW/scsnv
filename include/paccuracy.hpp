@@ -26,6 +26,7 @@ SOFTWARE.
 #include "tokenizer.hpp"
 #include "fasta.hpp"
 #include "pileup_aux.hpp"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <exception>
 
 namespace gwsc{
@@ -45,7 +46,7 @@ class ProgAccuracy : public ProgBase {
         int run_();
         void read_passed_(unsigned int blength);
 
-        spp::sparse_hash_map<std::string, unsigned int>    bchash_;
+        phmap::flat_hash_map<std::string, unsigned int>    bchash_;
         TXIndex                  idx_;
         std::string              lib_;
         std::string              bcin_;

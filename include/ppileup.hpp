@@ -23,8 +23,8 @@ SOFTWARE.
 
 #include "pbase.hpp"
 #include <exception>
-#include "sparsepp/sparsepp/spp.h"
 #include "bam_genes.hpp"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include "fasta.hpp"
 #include "pileup_worker.hpp"
 
@@ -32,7 +32,7 @@ namespace gwsc{
 
 class ProgPileup : public ProgBase {
     public:
-        using BarcodeHash = spp::sparse_hash_map<std::string, unsigned int>;
+        using BarcodeHash = phmap::flat_hash_map<std::string, unsigned int>;
         argagg::parser parser() const {
             argagg::parser argparser {{
                 { "help", {"-h", "--help"},

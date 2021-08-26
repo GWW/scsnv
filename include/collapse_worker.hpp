@@ -20,9 +20,9 @@ SOFTWARE.
 
 #include "bam_genes.hpp"
 #include "fasta.hpp"
-#include "sparsepp/sparsepp/spp.h"
 #include <thread>
 #include "collapse_aux.hpp"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 
 namespace gwsc {
 
@@ -30,7 +30,7 @@ class CollapseWorker {
     CollapseWorker( const CollapseWorker& ) = delete;
     CollapseWorker& operator=(const CollapseWorker&) = delete;
     public:
-        using gene_hash = spp::sparse_hash_map<uint32_t, size_t>;
+        using gene_hash = phmap::flat_hash_map<uint32_t, size_t>;
         using cb_bhash = std::function<AlignSummary::bint(std::string &)>;
 
         using clengths = std::vector<std::pair<unsigned int, unsigned int>>;
@@ -99,7 +99,7 @@ class CollapseWorker {
         std::thread                               thread_;
         std::string                               tmp_;
         std::vector<size_t>                       sidx_;
-        spp::sparse_hash_map<uint64_t, size_t>    uhash_;
+        phmap::flat_hash_map<uint64_t, size_t>    uhash_;
         std::vector<BamDetail*>                   barcodes_;
         std::vector<BamDetail*>                   umis_;
         std::vector<ReadContig*>                  contigs_;

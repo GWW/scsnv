@@ -23,7 +23,7 @@ SOFTWARE.
 
 #include "aux.hpp"
 #include "align_aux.hpp"
-#include "sparsepp/sparsepp/spp.h"
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <vector>
 
 namespace gwsc {
@@ -86,7 +86,7 @@ class CBWhiteListShort{
         bool get_index_(const std::string & bc, AlignSummary::bint & code) const;
         std::vector<std::string>                       barcodes_;
         std::vector<unsigned int>                      counts_;
-        spp::sparse_hash_map<AlignSummary::bint, AlignSummary::bint>       hash_;
+        phmap::flat_hash_map<AlignSummary::bint, AlignSummary::bint>       hash_;
 };
 
 class CBDeNovo{

@@ -21,8 +21,8 @@ SOFTWARE.
 */
 #include "psnvcounts.hpp"
 #include "collapse_hist.hpp"
-#include "sparsepp/sparsepp/spp.h"
 #include <unordered_map>
+#include "parallel-hashmap/parallel_hashmap/phmap.h"
 #include <zlib.h>
 #include <fstream>
 #include "bam_genes_aux.hpp"
