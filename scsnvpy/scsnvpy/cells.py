@@ -95,6 +95,9 @@ def density_scatter(ax, x, y, s=10, cmap=plt.cm.inferno, logx=False, logy=False)
 
 
 def MT_cutoff(ax, df, key, mads, max_value, mt_perc):
+    if key not in df.columns:
+        print('Error {key} not in the barcode data columns')
+        sys.exit()
     mols = df['molecules'].values
     pmt = 100.0 * df[key].values / mols
     med = NP.median(pmt)
@@ -180,6 +183,7 @@ def barcode_cutoff(ax, df, mads, max_mads):
 def cells_cmd(cargs):
     parser = argparse.ArgumentParser(description='Find barcodes that represent cells')
     parser.add_argument('-u', '--min-umis', help='Minimum number of spliced UMIs for a cell', type=int, default=750)
+    parser.add_argument('--skip-mt', help='Skip MT (%) filtering', action='store_true')
     parser.add_argument('--mt-perc', help='Set the MT cutoff to this %, set to -1 to enable the automatic cutoff below', type=float, default=25)
     parser.add_argument('--mt-mad', help='MT cutoff of median + X * (median absolute deviation)', type=float, default=5)
     parser.add_argument('--mt-max', help='Maximum MT Percent', type=float, default=25)
@@ -240,8 +244,10 @@ def cells_cmd(cargs):
 
     prates = krates.iloc[:idx].copy()
     prates['passed'] = True
-
-    MT_cutoff(axs[1], prates, args.mt_key, args.mt_mad, args.mt_max, args.mt_perc)
+    if not args.skip_mt:
+        MT_cutoff(axs[1], prates, args.mt_key, args.mt_mad, args.mt_max, args.mt_perc)
+    else:
+        print('Skipping MT DNA filtering')
     dups_cutoff(axs[2], prates, args.pcr_mad, args.pcr_mad_max)
     sat_cutoff(axs[3], prates, args.saturation_mad, args.saturation_mad_max)
     barcode_cutoff(axs[4], prates, args.correct_mad, args.correct_mad_max)
