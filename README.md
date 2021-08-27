@@ -79,6 +79,8 @@ scsnv map -l V2 -i index_prefix -g bwa_genome_index -b sample/barcode -t 24 --ba
 scsnv collapse -l V2 -r genome_fasta -i index_prefix -o sample/ --threads 4 --bam-write 8 -b sample/barcode_counts.txt.gz sample/merged.bam
 
 #Find the optimal number of cells
+#If a group file wasn't specified you can add the --skip-mt flag to skip MT DNA(%) calculations
+#There are additional options to control how cells are filtered that can be used see scsnvmisc cells -h
 scsnvmisc cells -o sample sample/summary.h5
 
 #Pileup the reads from the collapsed molecules using a list of passed barcodes
@@ -197,3 +199,9 @@ scsnvmisc results -o results.txt.gz sample/accuracy
 The output file will contain merged counts from all of the files as well as some useful annotations from the merged_snvs.txt.gz file that was generated from the merge command. This command will read all files with the prefix ```sample/accuracy_*.txt.gz``` and merge them together
 
 This will output a file with all of the SNV counts from all of the tools.  
+
+
+#### TODO: 
+
+1) Add support for emptydrops
+2) Improve the performance of scSNV pileup
