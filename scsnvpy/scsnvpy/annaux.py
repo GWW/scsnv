@@ -119,17 +119,12 @@ class AnnotateAux(object):
 
         if self.emap is None:
             print("Annotating edits")
-            df = pd.read_csv(fedits, sep="\t", header=None, names=['chrom', 'start', 'end', 'data'])
+            df = pd.read_csv(fedits, sep="\t")
             emap = set()
             for t in df.itertuples():
-                tc = t.chrom[3:]
-                if 'alt' in tc:
-                    continue
-                elif tc == 'M':
-                    tc = 'MT'
-                elif '_' in tc:
-                    tc = tc.split('_')[1].replace('v', '.')
-                emap.add((tc, t.start))
+                tc = t.Region
+                if (t.Ref == 'T' and t.Ed == 'C') or (t.Ref == 'A' and t.Ed == 'G'):
+                    emap.add((tc, t.Position))
             self.emap = emap
         emap = self.emap
 
@@ -156,13 +151,7 @@ class AnnotateAux(object):
             refs = {}
             rdata = []
             for t in df.itertuples():
-                tc = t.chrom[3:]
-                if 'alt' in tc:
-                    continue
-                elif tc == 'M':
-                    tc = 'MT'
-                elif '_' in tc:
-                    tc = tc.split('_')[1].replace('v', '.')
+                tc = t.chrom
                 refs.setdefault(tc, []).append((t.start, t.end, len(rdata)))
                 rdata.append((t.strand, t.rep_name, t.rep_class, t.rep_family))
 
