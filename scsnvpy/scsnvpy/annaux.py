@@ -120,7 +120,7 @@ class AnnotateAux(object):
 
         if self.emap is None:
             print("Annotating edits")
-            df = pd.read_csv(fedits, sep="\t")
+            df = pd.read_csv(fedits, sep="\t", dtype={'chrom':object})
             emap = set()
             for t in df.itertuples():
                 tc = t.Region
@@ -148,7 +148,8 @@ class AnnotateAux(object):
 
         print("Annotating repeats")
         if self.repeats is None:
-            df = pd.read_csv(frep, sep="\t", skiprows=1, header=None, usecols=[5,6,7,9,10,11,12], names=['chrom', 'start', 'end', 'strand', 'rep_name', 'rep_class', 'rep_family'])
+            df = pd.read_csv(frep, sep="\t", skiprows=1, header=None, usecols=[5,6,7,9,10,11,12], 
+                    names=['chrom', 'start', 'end', 'strand', 'rep_name', 'rep_class', 'rep_family'], dtype={'chrom':object})
             df.sort_values(by=['chrom', 'start', 'end'], inplace=True)
             refs = {}
             rdata = []
