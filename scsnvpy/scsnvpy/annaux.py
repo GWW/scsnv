@@ -113,6 +113,7 @@ class AnnotateAux(object):
         print(f'Found in 1000 Genomes: {ss}')
 
     def annotate_edits(self, dfo, fedits):
+        #REDIPortal is pos + 1
         if fedits is None:
             dfo['REDIportal'] = False
             return
@@ -124,7 +125,7 @@ class AnnotateAux(object):
             for t in df.itertuples():
                 tc = t.Region
                 if (t.Ref == 'T' and t.Ed == 'C') or (t.Ref == 'A' and t.Ed == 'G'):
-                    emap.add((tc, t.Position))
+                    emap.add((tc, t.Position - 1))
             self.emap = emap
         emap = self.emap
 
@@ -137,6 +138,7 @@ class AnnotateAux(object):
 
 
     def annotate_repeats(self, dfo, frep):
+        #UCSC Repeat table is zero based
         if frep is None:
             dfo['rep_strand'] = ''
             dfo['rep_name'] = ''
