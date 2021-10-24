@@ -6,7 +6,6 @@ Example python scripts to annotate SNVs, identify barcode tags that represent ce
 
 For reproducibility the version of Cell Ranger used in our manuscript comparisons is available at [here](https://github.com/GWW/cellranger_211_mirror)
 
-
 scSNV requires the HDF5 C and C++ Libraries for compilation.
 
 ## Building instructions:
@@ -88,8 +87,9 @@ scsnv pileup -l V2 -i index_prefix -r genome_fasta -o sample/pileup -p ./sample/
 
 #The pileup can be annotated and bi-allelic strand-specific SNVs can be called using the scsnvpy annotate command (See Below)
 
-#Quantify SNV co-expression and collapsed molecule lengths
+#Quantify SNV co-expression and collapsed molecule lengths.  This tool requires the output file from the scsnvmisc annotate command described below
 scsnv snvcounts -t -s sample/pileup_passed_snvs.txt.gz -b sample/passed_barcodes.txt.gz -i index_prefix -o sample/snv -l V2 sample/collapsed.bam
+
 ```
 
 Note:
