@@ -120,7 +120,7 @@ class AnnotateAux(object):
 
         if self.emap is None:
             print("Annotating edits")
-            df = pd.read_csv(fedits, sep="\t", dtype={'chrom':object})
+            df = pd.read_csv(fedits, sep="\t", dtype={'Region':object})
             emap = set()
             for t in df.itertuples():
                 tc = t.Region

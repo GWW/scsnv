@@ -131,8 +131,8 @@ scsnvmisc annotate -r ./edits/repeat_masker.txt.gz -d 1000GENOMES.txt.gz -e REDI
 ##### Arguments:
 | Option        | Argument      | Function | Required |
 | ---------------|:--------------|:---------|:---------|
-| -e, --edits | path | BED file of RNA edits from REDIportal | No |
-| -r, --repeats | path | Path to UCSC repeat masker annotations | No |
+| -e, --edits | path | File of RNA edits from REDIportal | No |
+| -r, --repeats | path | Path to UCSC repeat masker annotations (from the UCSC Table Browser) | No |
 | -d, --g1000 | path | Path to 1000 Genomes txt file (see below to make) | No |
 | -c, --capture | path | Exome capture region bed file, uses the location of these + flank | No |
 | -f, --flank | path | Flank for capture regions (Default 100 bp) | No |
@@ -140,6 +140,16 @@ scsnvmisc annotate -r ./edits/repeat_masker.txt.gz -d 1000GENOMES.txt.gz -e REDI
 | -n, --name | path | Name key to use if a SNV is found in this VCF file (one for each VCF file) | No |
 | -u, --purity | float | Proportion of non-reference counts that must match a single allele (Default: 0.95 | No |
 | -s, --strand-purity | float | Proportion of reads that must be derived from the same strand to call a stranded SNP (Default: 0.9) | No |
+
+##### REDIPortal download
+The files can be directly downloaded from the REDIPortal database
+Note that the chromosome names may need to be remapped depending on the reference build you used for mapping and alignment.
+Chromosome mapping files can be found [here](https://github.com/dpryan79/ChromosomeMappings). The first column would need to be remapped to the correct chromosome names if they do not match
+
+##### RepeatMasker download
+The files can be directly downloaded from the UCSC Table Browser `rmsk` table
+Note that the chromosome names may need to be remapped depending on the reference build you used for mapping and alignment.
+Chromosome mapping files can be found [here](https://github.com/dpryan79/ChromosomeMappings). The fifth column would need to be remapped to the correct chromosome names if they do not match
 
 ##### 1000 Genomes File Generation:
 ```bash
@@ -154,6 +164,9 @@ bcftools +fill-tags ALL.chrMT.phase3_callmom-v0_4.20130502.genotypes.vcf.gz -- -
 zgrep --no-filename -E "^(#)" -v ALL.chrMT-filtered.vcf.gz | gzip > ALL.chrMT-filtered-no-header.vcf.gz
 zgrep --no-filename -E "^(#)\1+" -v 1000GENOMES-filtered.vcf.gz ALL.chrMT-filtered-no-header.vcf.gz | cut -f 1,2,4,5 | gzip > 1000GENOMES.txt.gz
 ```
+
+Note that the chromosome names may need to be remapped depending on the reference build you used for mapping and alignment.
+Chromosome mapping files can be found [here](https://github.com/dpryan79/ChromosomeMappings). The first column would need to be remapped to the correct chromosome names if they do not match
 
 ##### Output Files:
 | File        | Contents      |
