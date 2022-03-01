@@ -103,8 +103,6 @@ def snv2vcf_cmd(cargs):
             for b in data.barcodes:
                 fout.write(b + "\n")
             fout.close()
-
-
     elif args.csv:
         tref = data.strand_ref[ridx].toarray()
         talt = data.strand_alt[ridx].toarray()
