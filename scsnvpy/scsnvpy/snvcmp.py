@@ -138,7 +138,7 @@ class SampleData(object):
             dd = fl.load(fd)
             self.barcodes = dd['barcodes']
             if type(self.barcodes[0]) == bytes:
-                self.barcodes = np.array([x.decode('utf-8') for x in self.barcodes])
+                self.barcodes = NP.array([x.decode('utf-8') for x in self.barcodes])
             self.snvs = dd['ann']
             self.strand_ref = dd['strand_ref_mat']
             self.strand_alt = dd['strand_alt_mat']
