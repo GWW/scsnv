@@ -364,6 +364,7 @@ void ProgPileup::parse_targets_(){
     ParserTokens toks;
     in.tokenize_line(toks);
     while(in.tokenize_line(toks) > -1){
+        if(toks.empty() || toks[0].empty()) continue;
         auto it = tids.find(toks[0]);
         if(it == tids.end()){
             std::cout << "Missing reference " << toks[0] << "\n";

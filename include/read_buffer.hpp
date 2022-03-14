@@ -174,7 +174,7 @@ class BufferBase {
         // Not very memory efficient, need to preserve tokens maybe?
         // Use an index and add additional strings as needed ?
         if(begin == buffer.end() && eof){
-            return - 1;
+            return -1;
         }
         if(toks.empty()){
             toks.push_back(std::string());

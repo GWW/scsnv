@@ -151,6 +151,7 @@ inline int ProgAccuracy::run_(){
         snv.line = line;
         Tokenizer tk(line, '\t');;
         tk.get_all(toks);
+        if(toks.empty() || strlen(toks[0]) == 0) continue;
         std::string chrom = toks[0];
         unsigned int pos = std::stoul(toks[1]);
         snv.chrom = toks[0];

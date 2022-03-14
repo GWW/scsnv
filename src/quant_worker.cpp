@@ -44,6 +44,7 @@ void QuantBase::build_gene_groups(const std::string & fname) {
     size_t skipped = 0;
     std::vector<unsigned int> gcounts;
     while(in.tokenize_line(toks) >= 0){
+        if(toks.empty() || toks[0].empty()) continue;
         auto git = gid_map.find(toks[0]);
         if(git == gid_map.end()){
             //std::cout << "Skipping gene_id " << toks[0] << " from group " << toks[1] << "\n";

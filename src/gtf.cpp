@@ -72,14 +72,14 @@ void gwsc::parse_GTF(const std::string & file, GeneModel & m) {
     Tokenizer::tokens ttoks;
     ParserTokens toks;
     while(in.tokenize_line(toks) >= 0){
-        if(!toks.empty() && toks[0][0] == '#') {
+        if(toks.empty() || toks[0].empty() || toks[0][0] == '#'){
             line_no++;
             continue;
         }
-	if(toks.size() < 9 || toks.size() > 10){
-	    std::cout << "Error malformed GTF file: " << file << " at line: " << line_no << " number of toks = " << toks.size() << "\n";
-	    exit(1);
-	}
+        if(toks.size() < 9 || toks.size() > 10){
+            std::cout << "Error malformed GTF file: " << file << " at line: " << line_no << " number of toks = " << toks.size() << "\n";
+            exit(1);
+        }
 
         bool exon = false, stop_codon = false, start_codon = false;
         if(toks[2] ==  "exon"){

@@ -145,6 +145,7 @@ void ProgSNVCounts::parse_snvs_(){
         }
         if(failed) exit(EXIT_FAILURE);
         while(fb.tokenize_line(toks) >= 0){
+            if(toks.empty() || toks[chromi].empty()) continue;
             int tid = tidmap[toks[chromi]];
             unsigned int pos = std::stoi(toks[posi]);
             char ref = toks[refi][0];
