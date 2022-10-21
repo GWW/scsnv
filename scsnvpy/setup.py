@@ -51,7 +51,7 @@ setup(name='scsnvpy',
       license='MIT',
       packages=['scsnvpy'],
       install_requires=['matplotlib','numpy','scipy', 'cython', 'h5py', 'flammkuchen', 'NCLS', 'tables', 'cyvcf2'],
-      scripts=['bin/scsnvmisc'],
+      scripts=['bin/scsnvmisc', 'bin/scsnv2mtx'],
       ext_modules=cythonize(extensions, include_path=pxd_dirs),
 )
 
