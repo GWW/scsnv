@@ -87,11 +87,18 @@ def density_scatter(ax, x, y, s=10, cmap=plt.cm.inferno, logx=False, logy=False)
     # Sort the points by density, so that the densest points are plotted last
     idx = z.argsort()
     x, y, z = x[idx], y[idx], z[idx]
+
     ret = ax.scatter(x, y, c=z, s=s, lw=0, cmap=cmap, marker='o')
-    if logx:
-        ax.set_xscale('log', subsx=[2,3,4,5,6,7,8,9])
-    if logy:
-        ax.set_yscale('log', subsy=[2,3,4,5,6,7,8,9])
+    try:
+        if logx:
+            ax.set_xscale('log', subs=[2,3,4,5,6,7,8,9])
+        if logy:
+            ax.set_yscale('log', subs=[2,3,4,5,6,7,8,9])
+    except:
+        if logx:
+            ax.set_xscale('log', subsx=[2,3,4,5,6,7,8,9])
+        if logy:
+            ax.set_yscale('log', subsy=[2,3,4,5,6,7,8,9])
 
 
 def MT_cutoff(ax, df, key, mads, max_value, mt_perc):
@@ -238,7 +245,10 @@ def cells_cmd(cargs):
     ax.set_title(f'{sname}\nBarcodes Passed = {idx:,}')
     ax.set_axisbelow(True)
     ax.grid(color='0.5', lw=0.5, ls='--')
-    ax.set_xscale('log', subsx=[2,3,4,5,6,7,8,9])
+    try:
+        ax.set_xscale('log', subs=[2,3,4,5,6,7,8,9])
+    except:
+        ax.set_xscale('log', subsx=[2,3,4,5,6,7,8,9])
     ax.minorticks_on()
 
 
@@ -270,8 +280,12 @@ def cells_cmd(cargs):
     ax.axhline(max(min_umi, krates[~krates['passed']].molecules.min()), lw=1, color=colors[2], ls='--')
     ax.set_axisbelow(True)
     ax.grid(color='0.5', lw=0.5, ls='--')
-    ax.set_yscale('log', subsy=[2,3,4,5,6,7,8,9])
-    ax.set_xscale('log', subsx=[2,3,4,5,6,7,8,9])
+    try:
+        ax.set_yscale('log', subs=[2,3,4,5,6,7,8,9])
+        ax.set_xscale('log', subs=[2,3,4,5,6,7,8,9])
+    except:
+        ax.set_yscale('log', subsy=[2,3,4,5,6,7,8,9])
+        ax.set_xscale('log', subsx=[2,3,4,5,6,7,8,9])
     ax.minorticks_on()
 
 
