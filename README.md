@@ -21,6 +21,7 @@ make
 
 ```bash
 cd scsnvpy
+pip install cython numpy ncls #NCLS fails to automatically install with some python versions but works with pip
 python setup.py install
 ```
 
