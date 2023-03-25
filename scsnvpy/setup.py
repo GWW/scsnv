@@ -50,7 +50,7 @@ setup(name='scsnvpy',
       author_email='gavin.w.wilson@gmail.com',
       license='MIT',
       packages=['scsnvpy'],
-      install_requires=['matplotlib','numpy','scipy', 'cython', 'h5py', 'flammkuchen', 'NCLS', 'tables', 'cyvcf2'],
+      install_requires=['matplotlib','numpy','scipy', 'cython', 'h5py', 'flammkuchen', 'NCLS', 'tables', 'cyvcf2', 'pandas', 'statsmodels', 'anndata'],
       scripts=['bin/scsnvmisc', 'bin/scsnv2mtx'],
       ext_modules=cythonize(extensions, include_path=pxd_dirs),
 )
