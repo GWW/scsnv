@@ -150,14 +150,14 @@ inline bool BamGeneReader<T,R,P>::get_(){
 template <typename T, typename R, typename P>
 inline unsigned int BamGeneReader<T, R, P>::read_(BamBuffer & buffer){
     size_t r = 0;
-    int rstart = 0;
+    long int rstart = 0;
     size_t start_count = buffer.count();
     bool warned = false;
     //std::cout << "Reading gene group max_rgt = " << max_rgt_ << "\n";
     //int lpos = next_.b->core.pos;
     while(next_.b->core.tid == ltid_ && next_.b->core.pos < max_rgt_){
         int32_t gid = next_.gid;
-        rstart = next_.b->core.pos;
+        rstart = std::min(next_.b->core.pos, rstart);
         max_rgt_ = std::max(static_cast<int>(index.gene(gid).rgt), max_rgt_);
         max_rgt_ = std::max(static_cast<int>(bam_endpos(next_.b)), max_rgt_);
         if(r < max_reads_){
