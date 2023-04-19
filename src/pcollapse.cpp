@@ -38,7 +38,7 @@ void ProgCollapse::load() {
     lib_type_ = args_["library"].as<std::string>("V2");
     bam_write_threads_ = args_["bam_write"].as<unsigned int>(1);
     threads_ = args_["threads"].as<unsigned int>(1);
-    max_reads_ = args_["reads"].as<unsigned int>(5000000);
+    max_reads_ = args_["reads"].as<unsigned int>(10) * 1000000;
     bc_counts_ = args_["barcodes"].as<std::string>();
     if(args_.pos.size() != 1){
         throw std::runtime_error("Missing the prefix option");

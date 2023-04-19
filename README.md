@@ -76,9 +76,9 @@ scsnv count -o sample/barcode  -k scsnv/data/737K-august-2016.txt -l V2 sample/r
 scsnv map -l V2 -i index_prefix -g bwa_genome_index -b sample/barcode -t 24 --bam-write 4 -q 4 -c index_prefix/gene_groups.txt -o sample/ sample/run1
 
 #Collapse the mRNA-tags into collapsed molecules
-#If you get a lot of warnings about regions with more than 5M reads, you can increase the number of reads permitted for a single gene
-#region using the -r option, for example, -r 10000000
-#If you run out of memory you can reduce the number of reads, however, some genes will not be properly collapsed as a result
+#If you get a lot of warnings about regions with more than 10M reads, you can increase the number of reads permitted for a single gene
+#region using the -r option, for example, `-r 20`
+#If you run out of memory you can reduce the number of reads (-r 5), however, some genes will not be properly collapsed as a result
 scsnv collapse -l V2 -r genome_fasta -i index_prefix -o sample/ --threads 4 --bam-write 8 -b sample/barcode_counts.txt.gz sample/merged.bam
 
 #Find the optimal number of cells

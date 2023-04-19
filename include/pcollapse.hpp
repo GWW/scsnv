@@ -41,7 +41,7 @@ class ProgCollapse : public ProgBase {
                 { "threads", {"-t", "--threads"},
                   "Number of processor threads (Default 1)", 1},
                 { "reads", {"-m", "--reads"},
-                  "Maximum reads to read from a gene (Default 10000000)", 5000000},
+                  "Maximum reads to read from a gene (in millions) (Default 10)", 10},
                 { "bam_write", {"-w", "--bam-write"},
                   "Number of writer threads to use when emitting sorted bam files (Default 1)", 1},
                 { "library", {"-l", "--library"},
@@ -71,7 +71,7 @@ class ProgCollapse : public ProgBase {
         std::string      bc_counts_;
         std::string      out_;
         std::string      ref_;
-        uint64_t         max_reads_ = 5000000;
+        uint64_t         max_reads_ = 10000000;
         unsigned int     bam_write_threads_ = 1;
         unsigned int     threads_ = 1;
 
