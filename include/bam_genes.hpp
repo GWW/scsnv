@@ -150,7 +150,7 @@ inline bool BamGeneReader<T,R,P>::get_(){
 template <typename T, typename R, typename P>
 inline unsigned int BamGeneReader<T, R, P>::read_(BamBuffer & buffer){
     size_t r = 0;
-    long int rstart = 0;
+    long int rstart = std::numeric_limits<long int>::max();
     size_t start_count = buffer.count();
     bool warned = false;
     //std::cout << "Reading gene group max_rgt = " << max_rgt_ << "\n";
