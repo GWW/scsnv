@@ -161,8 +161,9 @@ inline unsigned int BamGeneReader<T, R, P>::read_(BamBuffer & buffer){
         max_rgt_ = std::max(static_cast<int>(index.gene(gid).rgt), max_rgt_);
         max_rgt_ = std::max(static_cast<int>(bam_endpos(next_.b)), max_rgt_);
         if(r < max_reads_){
-            warned = true;
             buffer.add(next_);
+        }else{
+            warned = true;
         }
         r++;
         if(!get_()) return r;
