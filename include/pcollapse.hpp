@@ -41,7 +41,7 @@ class ProgCollapse : public ProgBase {
                 { "threads", {"-t", "--threads"},
                   "Number of processor threads (Default 1)", 1},
                 { "reads", {"-m", "--reads"},
-                  "Maximum reads to read from a gene (in millions) (Default 10)", 10},
+                  "Maximum reads to read from a gene (in millions) (Default 10)", 1},
                 { "bam_write", {"-w", "--bam-write"},
                   "Number of writer threads to use when emitting sorted bam files (Default 1)", 1},
                 { "library", {"-l", "--library"},
