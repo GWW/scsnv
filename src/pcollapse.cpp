@@ -38,6 +38,7 @@ void ProgCollapse::load() {
     lib_type_ = args_["library"].as<std::string>("V2");
     bam_write_threads_ = args_["bam_write"].as<unsigned int>(1);
     threads_ = args_["threads"].as<unsigned int>(1);
+    max_reads_ = args_["reads"].as<unsigned int>(5000000);
     bc_counts_ = args_["barcodes"].as<std::string>();
     if(args_.pos.size() != 1){
         throw std::runtime_error("Missing the prefix option");
@@ -63,6 +64,7 @@ int ProgCollapse::run_wrap_(){
     //br.add_bams(bam_files_.begin(), bam_files_.end());
     br.set_bam(bam_file_);
     br.index.load(index_);
+    br.set_max_reads(max_reads_);
     br.prepare();
 
     CollapsedBamWriter bout(out_, bam_write_threads_, br.header());

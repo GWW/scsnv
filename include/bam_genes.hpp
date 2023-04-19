@@ -93,19 +93,23 @@ class BamGeneReader{
             return bm_.file_totals();
         }
 
+        void set_max_reads(uint64_t max_reads){
+            max_reads_ = max_reads;
+        }
+
         TXIndex                    index;
 
     protected:
         virtual bool get_();
         unsigned int read_(BamBuffer & buffer);
 
+        uint64_t                  max_reads_ = 5000000;
         P                         rf_;
         R                         bm_;
         BamDetail                 next_;
         std::mutex                mutex_;
         unsigned int              total_ = 0;
         unsigned int              idx_ = 0;
-        unsigned int              umi_len_ = T::UMI_LEN;
         int                       max_rgt_ = 0;
         int                       ltid_ = -1;
         bool                      done_ = false;
@@ -146,15 +150,28 @@ inline bool BamGeneReader<T,R,P>::get_(){
 template <typename T, typename R, typename P>
 inline unsigned int BamGeneReader<T, R, P>::read_(BamBuffer & buffer){
     size_t r = 0;
+    int rstart = 0;
+    size_t start_count = buffer.count();
+    bool warned = false;
     //std::cout << "Reading gene group max_rgt = " << max_rgt_ << "\n";
     //int lpos = next_.b->core.pos;
     while(next_.b->core.tid == ltid_ && next_.b->core.pos < max_rgt_){
         int32_t gid = next_.gid;
+        rstart = next_.b->core.pos;
         max_rgt_ = std::max(static_cast<int>(index.gene(gid).rgt), max_rgt_);
         max_rgt_ = std::max(static_cast<int>(bam_endpos(next_.b)), max_rgt_);
+        if(r < max_reads_){
+            warned = true;
+            buffer.add(next_);
+        }
         r++;
-        buffer.add(next_);
         if(!get_()) return r;
+    }
+
+    if(warned){
+        std::cerr << "[Warning] exceeded " << max_reads_ << " skipping this gene region " << r << " reads. Region " 
+            << index.tname(ltid_) << ":" << rstart << " - " << max_rgt_ << "\n";
+        buffer.revert(start_count);
     }
     //std::cout << "  Done " << r << " total\n";
     idx_++;

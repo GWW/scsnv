@@ -154,7 +154,11 @@ class BamBuffer {
         void set_starts(std::vector<unsigned int>::const_iterator start, std::vector<unsigned int>::const_iterator end){
             starts_.assign(start, end);
         }
-    
+
+        void revert(size_t count){
+            count_ = count;
+        }
+ 
         void add(BamDetail & d){
             assure_size();
             reads_[count_++]->copy(d);
