@@ -435,7 +435,7 @@ struct AlignData {
         return (cigar.front().op == Cigar::SOFT_CLIP ? cigar.front().len : 0) + 
                (cigar.back().op == Cigar::SOFT_CLIP ? cigar.back().len : 0);
     }
-    
+
     bool operator<(const AlignData & a) const {
         return std::make_tuple(atype == AlignType::ANTISENSE, gid, -1 * static_cast<int>(score), txid) < 
             std::make_tuple(a.atype == AlignType::ANTISENSE, a.gid, -1 * static_cast<int>(a.score), a.txid);

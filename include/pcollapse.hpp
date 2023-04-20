@@ -71,7 +71,7 @@ class ProgCollapse : public ProgBase {
         std::string      bc_counts_;
         std::string      out_;
         std::string      ref_;
-        uint64_t         max_reads_ = 10000000;
+        uint64_t         max_reads_ = 50000000;
         unsigned int     bam_write_threads_ = 1;
         unsigned int     threads_ = 1;
 

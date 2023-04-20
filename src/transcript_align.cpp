@@ -46,7 +46,7 @@ void TranscriptAlign::align(AlignGroup & ad, const std::string & seq, unsigned i
         ad.transcript_ar.m = 0;
         return;
     }
-    
+
     ad.transcript_score = ad.transcript_ar.a[0].score;
     /*
     for(size_t i = 1; i < ar.n; i++){
