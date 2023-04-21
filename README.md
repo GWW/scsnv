@@ -130,7 +130,7 @@ The barcodes should not contain a -1 in them.  For the bam files these will auto
 #### Annotate
 ##### Command:
 ```bash
-scsnvmisc annotate -r ./edits/repeat_masker.txt.gz -d 1000GENOMES.txt.gz -e REDIportal.bed.gz sample/pileup
+scsnvmisc annotate -r ./edits/repeat_masker.txt.gz -d 1000GENOMES.txt.gz -e REDIportal.txt.gz sample/pileup
 ```
 ##### Arguments:
 | Option        | Argument      | Function | Required |
