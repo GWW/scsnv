@@ -190,8 +190,8 @@ def barcode_cutoff(ax, df, mads, max_mads):
 def cells_cmd(cargs):
     parser = argparse.ArgumentParser(description='Find barcodes that represent cells')
     parser.add_argument('-u', '--min-umis', help='Minimum number of spliced UMIs for a cell', type=int, default=750)
-    parser.add_argument('--skip-mt', help='Skip MT (%) filtering', action='store_true')
-    parser.add_argument('--mt-perc', help='Set the MT cutoff to this %, set to -1 to enable the automatic cutoff below', type=float, default=25)
+    parser.add_argument('--skip-mt', help='Skip MT percent filtering', action='store_true')
+    parser.add_argument('--mt-perc', help='Set the MT cutoff to this percent, set to -1 to enable the automatic cutoff below', type=float, default=25)
     parser.add_argument('--mt-mad', help='MT cutoff of median + X * (median absolute deviation)', type=float, default=5)
     parser.add_argument('--mt-max', help='Maximum MT Percent', type=float, default=25)
     parser.add_argument('--mt-key', help='Gene group name for MT reads', type=str, default='group_MT')
