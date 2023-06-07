@@ -159,14 +159,7 @@ Chromosome mapping files can be found [here](https://github.com/dpryan79/Chromos
 ```bash
 wget ftp://ftp.ensembl.org/pub/release-99/variation/vcf/homo_sapiens/1000GENOMES-phase_3.vcf.gz
 wget ftp://ftp.ensembl.org/pub/release-99/variation/vcf/homo_sapiens/1000GENOMES-phase_3.vcf.gz.csi
-wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrMT.phase3_callmom-v0_4.20130502.genotypes.vcf.gz
-wget http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/ALL.chrMT.phase3_callmom-v0_4.20130502.genotypes.vcf.gz.tbi
-
-bcftools view -m2 -M2 -v snps -i "MAF>=0.01" -o 1000GENOMES-filtered.vcf.gz -O z 1000GENOMES-phase_3.vcf.gz
-bcftools +fill-tags ALL.chrMT.phase3_callmom-v0_4.20130502.genotypes.vcf.gz -- -t AF | bcftools view -m2 -M2 -v snps -i "MAF>=0.01" -o ALL.chrMT-filtered.vcf.gz
-
-zgrep --no-filename -E "^(#)" -v ALL.chrMT-filtered.vcf.gz | gzip > ALL.chrMT-filtered-no-header.vcf.gz
-zgrep --no-filename -E "^(#)\1+" -v 1000GENOMES-filtered.vcf.gz ALL.chrMT-filtered-no-header.vcf.gz | cut -f 1,2,4,5 | gzip > 1000GENOMES.txt.gz
+bcftools view --no-header -m2 -M2 -v snps -i "MAF>=0.01" 1000GENOMES-phase_3.vcf.gz | cut -f 1,2,4,5 | gzip > 1000GENOMES.txt.gz
 ```
 
 Note that the chromosome names may need to be remapped depending on the reference build you used for mapping and alignment.
