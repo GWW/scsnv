@@ -133,6 +133,7 @@ The barcodes should not contain a -1 in them.  For the bam files these will auto
 ##### Command:
 ```bash
 scsnvmisc annotate -r ./edits/repeat_masker.txt.gz -d 1000GENOMES.txt.gz -e REDIportal.txt.gz sample/pileup
+#See below to convert the h5 output to market matrices and a basic VCF file
 ```
 ##### Arguments:
 | Option        | Argument      | Function | Required |
@@ -181,8 +182,23 @@ Chromosome mapping files can be found [here](https://github.com/dpryan79/Chromos
 | sample/snv_reads.txt.gz | SNV co-expression molecule data, the SNV_idx is defined in the snv_map file or the passed_snvs file | 
 | sample/barcode_bases.txt.gz | Maximum collapsed read lengths per barcode |
 
-
 The pileup file can be annotated with various databases using the scsnvmisc annotate command.  The serialized flammkuchen files can be viewed using ddls after flammkuchen is installed. (pip install flammkuchen)
+
+#### Annotated HDF5 to market matrix format
+##### Command:
+```bash
+#You can use scsnvmisc snv2vcfmtx -h to view the command line options
+scsnvmisc snv2vcfmtx -r scsnv_index/gwsc_lenghts.txt -f genome.fa -o <output directory> --max-af 1 -c pileup_annotated.h5
+```
+##### Output Files:
+
+| File        | Contents      |
+| ---------------|:--------------|
+| refs.mtx | Reference base counts for each barcode/SNV |
+| alts.mtx | Alternative base counts for each barcode/SNV |
+| snvs.csv | Annotated SNV information |
+| snvs.vcf | Basic SNV vcf |
+
 
 #### Merge -- Merge the annotated output from multiple alignment tools to calculate accuracy using a matched whole genome or exome sequence
 ##### Command:
