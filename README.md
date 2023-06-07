@@ -81,9 +81,11 @@ scsnv map -l V2 -i index_prefix -g bwa_genome_index -b sample/barcode -t 24 --ba
 #If you run out of memory you can reduce the number of reads (-r 20), however, some genes will not be properly collapsed as a result
 scsnv collapse -l V2 -r genome_fasta -i index_prefix -o sample/ --threads 4 --bam-write 8 -b sample/barcode_counts.txt.gz sample/merged.bam
 
-#Find the optimal number of cells
+#Find the optimal number of cells or use a pre-defined list of barcodes
 #If a group file wasn't specified you can add the --skip-mt flag to skip MT DNA(%) calculations
 #There are additional options to control how cells are filtered that can be used see scsnvmisc cells -h
+#Alternatively, you can create a passed_barcodes.txt.gz file with a single field called "barcode" and one cell barcode per line
+
 scsnvmisc cells -o sample sample/summary.h5
 
 #Pileup the reads from the collapsed molecules using a list of passed barcodes
