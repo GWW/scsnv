@@ -22,6 +22,7 @@ SOFTWARE.
 #pragma once
 
 #include <string>
+#include <cstdint>
 namespace gwsc {
 
 static constexpr const char reverse_cmpl_[] = {

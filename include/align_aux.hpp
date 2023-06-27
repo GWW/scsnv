@@ -22,7 +22,7 @@ SOFTWARE.
 */
 
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 #include <ostream>
 #include <sstream>
