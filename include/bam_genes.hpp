@@ -157,7 +157,7 @@ inline unsigned int BamGeneReader<T, R, P>::read_(BamBuffer & buffer){
     //int lpos = next_.b->core.pos;
     while(next_.b->core.tid == ltid_ && next_.b->core.pos < max_rgt_){
         int32_t gid = next_.gid;
-        rstart = std::min(next_.b->core.pos, rstart);
+        rstart = std::min(static_cast<long int>(next_.b->core.pos), rstart);
         max_rgt_ = std::max(static_cast<int>(index.gene(gid).rgt), max_rgt_);
         max_rgt_ = std::max(static_cast<int>(bam_endpos(next_.b)), max_rgt_);
         if(r < max_reads_){
