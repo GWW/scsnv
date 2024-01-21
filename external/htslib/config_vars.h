@@ -1,5 +1,0 @@
-#define HTS_CC "/home/gww/micromamba/envs/GWW/bin/x86_64-conda-linux-gnu-cc"
-#define HTS_CPPFLAGS "-DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/gww/micromamba/envs/GWW/include"
-#define HTS_CFLAGS "-g -Wall -O2 -fvisibility=hidden -fPIC -fvisibility=hidden"
-#define HTS_LDFLAGS "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/gww/micromamba/envs/GWW/lib -Wl,-rpath-link,/home/gww/micromamba/envs/GWW/lib -L/home/gww/micromamba/envs/GWW/lib -fvisibility=hidden "
-#define HTS_LIBS "-ldeflate -llzma -lbz2 -lz -lm  "
