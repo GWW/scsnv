@@ -11,7 +11,7 @@ scSNV requires the HDF5 C and C++ Libraries for compilation.
 ## Building instructions:
 
 ```bash
-git clone --recurse-submodules https://github.com/GWW/scsnv.git
+git clone https://github.com/GWW/scsnv.git
 cd scsnv
 mkdir build
 cd build

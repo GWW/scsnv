@@ -37,17 +37,17 @@ libexecdir   = ${exec_prefix}/libexec
 datarootdir  = ${prefix}/share
 mandir       = ${datarootdir}/man
 
-CC     = /Users/gavinwilson/micromamba/envs/GWW/bin/arm64-apple-darwin20.0.0-clang
-RANLIB = arm64-apple-darwin20.0.0-ranlib
+CC     = /home/gww/micromamba/envs/GWW/bin/x86_64-conda-linux-gnu-cc
+RANLIB = /home/gww/micromamba/envs/GWW/bin/x86_64-conda-linux-gnu-ranlib
 
-CPPFLAGS = -D_FORTIFY_SOURCE=2 -isystem /Users/gavinwilson/micromamba/envs/GWW/include
+CPPFLAGS = -DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/gww/micromamba/envs/GWW/include
 CFLAGS   =  -g -Wall -O2 -fvisibility=hidden -fPIC -fvisibility=hidden
-LDFLAGS  = -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/gavinwilson/micromamba/envs/GWW/lib -L/Users/gavinwilson/micromamba/envs/GWW/lib -fvisibility=hidden
-VERSION_SCRIPT_LDFLAGS = 
-LIBS     = -llzma -lbz2 -lz 
+LDFLAGS  = -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/gww/micromamba/envs/GWW/lib -Wl,-rpath-link,/home/gww/micromamba/envs/GWW/lib -L/home/gww/micromamba/envs/GWW/lib -fvisibility=hidden
+VERSION_SCRIPT_LDFLAGS = -Wl,-version-script,$(srcprefix)htslib.map
+LIBS     = -llzma -lbz2 -lz -lm 
 
-PLATFORM   = Darwin
-PLUGIN_EXT = .bundle
+PLATFORM   = default
+PLUGIN_EXT = .so
 
 # The default Makefile enables some of the optional files, but we blank
 # them so they can be controlled by configure instead.
@@ -115,6 +115,6 @@ LIBS += $(noplugin_LIBS)
 endif
 
 # Extra CFLAGS for specific files
-HTS_CFLAGS_AVX2 = 
-HTS_CFLAGS_AVX512 = 
-HTS_CFLAGS_SSE4 = 
+HTS_CFLAGS_AVX2 = -mavx2 -mpopcnt
+HTS_CFLAGS_AVX512 = -mavx512f -mpopcnt
+HTS_CFLAGS_SSE4 = -msse4.1 -mssse3 -mpopcnt

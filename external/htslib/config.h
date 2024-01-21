@@ -36,7 +36,7 @@
 /* #undef HAVE_EXTERNAL_LIBHTSCODECS */
 
 /* Define to 1 if you have the 'fdatasync' function. */
-/* #undef HAVE_FDATASYNC */
+#define HAVE_FDATASYNC 1
 
 /* Define to 1 if you have the 'fsync' function. */
 #define HAVE_FSYNC 1

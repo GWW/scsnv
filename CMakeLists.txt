@@ -16,10 +16,10 @@ include(ExternalProject)
 ExternalProject_Add(htslib
     DOWNLOAD_DIR ${EXTERNAL_DIR}
     DOWNLOAD_COMMAND curl -k -L https://github.com/samtools/htslib/releases/download/1.19/htslib-1.19.tar.bz2 -o htslib-1.19.tar.bz2 &&
-        rm -rf htslib && mkdir htslib && tar -xzf htslib-1.19.tar.bz2 --strip-components=1 -C htslib && rm htslib-1.19.tar.bz2
+        rm -rf htslib && mkdir htslib && tar -xf htslib-1.19.tar.bz2 --strip-components=1 -C htslib && rm htslib-1.19.tar.bz2
     SOURCE_DIR ${EXTERNAL_DIR}/htslib
     CONFIGURE_COMMAND 
-         ./configure --disable-libcurl --disable-deflate
+         ./configure --disable-libcurl  --without-libdeflate
             CC=${CMAKE_C_COMPILER}
             CFLAGS=-g\ -Wall\ -O2\ -fvisibility=hidden\ -fPIC ${ARMFLAGS}
     BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} CC=${CMAKE_C_COMPILER}
