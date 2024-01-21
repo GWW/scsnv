@@ -19,6 +19,7 @@ __pycache__/
 *$py.class
 *.so
 scsnvpy/scsnvpy/*.c
+external/
 
 # Distribution / packaging
 .Python
