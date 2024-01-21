@@ -1,0 +1,5 @@
+#define HTS_CC "/Users/gavinwilson/micromamba/envs/GWW/bin/arm64-apple-darwin20.0.0-clang"
+#define HTS_CPPFLAGS "-D_FORTIFY_SOURCE=2 -isystem /Users/gavinwilson/micromamba/envs/GWW/include"
+#define HTS_CFLAGS "-g -Wall -O2 -fvisibility=hidden -fPIC -fvisibility=hidden"
+#define HTS_LDFLAGS "-Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/gavinwilson/micromamba/envs/GWW/lib -L/Users/gavinwilson/micromamba/envs/GWW/lib -fvisibility=hidden "
+#define HTS_LIBS "-llzma -lbz2 -lz  "

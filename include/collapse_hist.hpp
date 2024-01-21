@@ -28,7 +28,7 @@ SOFTWARE.
 #include <algorithm>
 #include <iostream>
 #include "gzstream.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 
 namespace gwsc {
 

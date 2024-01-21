@@ -22,7 +22,7 @@ SOFTWARE.
 #include "fasta.hpp"
 #include <thread>
 #include "collapse_aux.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 
 namespace gwsc {
 

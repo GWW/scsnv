@@ -26,7 +26,7 @@ SOFTWARE.
 #include "htslib/htslib/sam.h"
 #include "index.hpp"
 #include "reader.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include "bam_genes_aux.hpp"
 #include "fasta.hpp"
 #include "pileup_worker.hpp"

@@ -24,7 +24,7 @@ SOFTWARE.
 #include "bam_genes.hpp"
 #include "pileup.hpp"
 #include "fasta.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include "pileup_aux.hpp"
 #include <thread>
 

@@ -27,7 +27,7 @@ SOFTWARE.
 #include "gzstream.hpp"
 #include "pmap.hpp"
 #include "sbam_writer.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include "dust.hpp"
 #include "transcript_align.hpp"
 #include "genome_align.hpp"

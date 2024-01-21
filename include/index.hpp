@@ -25,7 +25,7 @@ SOFTWARE.
 #include "align_aux.hpp"
 #include "reader.hpp"
 #include "interval_tree.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include <unordered_map>
 #include <vector>
 namespace gwsc {

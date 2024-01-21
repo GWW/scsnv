@@ -26,7 +26,7 @@ SOFTWARE.
 #include "tokenizer.hpp"
 #include "fasta.hpp"
 #include "pileup_aux.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include <exception>
 
 namespace gwsc{

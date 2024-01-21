@@ -23,7 +23,7 @@ SOFTWARE.
 
 #include "index.hpp"
 #include "pmap.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include "dups.hpp"
 #include <exception>
 #include <list>

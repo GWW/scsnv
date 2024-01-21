@@ -22,7 +22,7 @@ SOFTWARE.
 #include "psnvcounts.hpp"
 #include "collapse_hist.hpp"
 #include <unordered_map>
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include <zlib.h>
 #include <fstream>
 #include "bam_genes_aux.hpp"

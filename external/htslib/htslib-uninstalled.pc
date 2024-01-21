@@ -1,0 +1,15 @@
+includedir=/Users/gavinwilson/projects/scsnv/external/htslib
+libdir=/Users/gavinwilson/projects/scsnv/external/htslib
+
+# Flags and libraries needed when linking against a static libhts.a
+# (used by manual and semi-manual pkg-config(1)-style enquiries).
+static_ldflags=-Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/gavinwilson/micromamba/envs/GWW/lib -L/Users/gavinwilson/micromamba/envs/GWW/lib
+static_libs=-lpthread -lz -lm -lbz2 -llzma
+
+Name: htslib
+Description: C library for high-throughput sequencing data formats
+Version: @-PACKAGE_VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -lhts
+Libs.private: -L${libdir} -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/gavinwilson/micromamba/envs/GWW/lib -L/Users/gavinwilson/micromamba/envs/GWW/lib -lbz2 -lhts -lm -lpthread
+Requires.private: zlib  liblzma

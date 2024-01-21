@@ -22,7 +22,7 @@ SOFTWARE.
 #include "align_aux.hpp"
 #include "misc.hpp"
 #include "gzstream.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include "collapse_worker.hpp"
 #include <list>
 #include <thread>

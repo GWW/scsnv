@@ -33,7 +33,7 @@ SOFTWARE.
 #include "htslib/htslib/hts.h"
 #include "htslib/htslib/thread_pool.h"
 #include "htslib/htslib/sam.h"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 
 using namespace gwsc;
 

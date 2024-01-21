@@ -24,7 +24,7 @@ SOFTWARE.
 #include "pbase.hpp"
 #include <exception>
 #include "bam_genes.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include "fasta.hpp"
 #include "pileup_worker.hpp"
 

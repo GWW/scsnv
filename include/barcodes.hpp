@@ -23,7 +23,7 @@ SOFTWARE.
 
 #include "aux.hpp"
 #include "align_aux.hpp"
-#include "parallel-hashmap/parallel_hashmap/phmap.h"
+#include "parallel_hashmap/parallel_hashmap/phmap.h"
 #include <vector>
 
 namespace gwsc {
