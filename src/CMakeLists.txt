@@ -39,6 +39,7 @@ add_library(scsnvlib
     "pmap.cpp"
     "pcollapse.cpp"
     "ppileup.cpp"
+    "pmixture.cpp"
     "psnvcounts.cpp"
     "paccuracy.cpp"
     "ptrim.cpp"

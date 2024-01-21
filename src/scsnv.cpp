@@ -33,6 +33,7 @@ SOFTWARE.
 #include "psnvcounts.hpp"
 #include "ptrim.hpp"
 #include "paccuracy.hpp"
+#include "pmixture.hpp"
 
 using namespace std;
 using namespace gwsc;
@@ -66,6 +67,10 @@ int main(int argc, char * argv[]){
     }else if(cmd == "accuracy"){
         ProgAccuracy prog;
         prog.parse(argc, argv);
+    }else if(cmd == "mixture"){
+        ProgMixture prog;
+        prog.parse(argc, argv);
     }
+
     return 0;
 }

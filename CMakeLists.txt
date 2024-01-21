@@ -13,6 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
 
 SET( EXTERNAL_DIR "${PROJECT_SOURCE_DIR}/external" )
 include(ExternalProject)
+
 ExternalProject_Add(htslib
     DOWNLOAD_DIR ${EXTERNAL_DIR}
     DOWNLOAD_COMMAND curl -k -L https://github.com/samtools/htslib/releases/download/1.19/htslib-1.19.tar.bz2 -o htslib-1.19.tar.bz2 &&
