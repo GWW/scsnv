@@ -18,10 +18,9 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-from setuptools import setup
+from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
-import numpy, os
-from setuptools.extension import Extension
+import numpy
 include_dirs = [numpy.get_include()]
 
 extensions = [
@@ -42,8 +41,9 @@ extensions = [
 
 pxd_dirs=['src/scsnvpy/']
 setup(name='scsnvpy',
-      packages=['scsnvpy'],
-      ext_modules=cythonize(extensions, include_path=pxd_dirs),
+    packages=find_packages(where='src'),
+    package_dir={"":"src"},
+    ext_modules=cythonize(extensions, include_path=pxd_dirs),
 )
 
 
