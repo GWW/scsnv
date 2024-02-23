@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#Copyright (c) 2018-2020 Gavin W. Wilson
+#Copyright (c) 2018-2022 Gavin W. Wilson
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -19,19 +19,35 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-if __name__ == "__main__":
-    import sys
-    from scsnvpy import cmds
+def go():
+    import numpy as NP
+    import flammkuchen as fl
+    import sys, os
+    from scipy.io import mmwrite
 
-    if len(sys.argv) < 2:
-        cmd = ''
-    else:
-        cmd = sys.argv[1]
-        sys.argv[1] = f'{sys.argv[0]} {sys.argv[1]}'
-        args = list(sys.argv[1:])
+    fd = sys.argv[1]
+    gt_dir = sys.argv[2]
 
-    if cmd not in cmds.COMMANDS:
-        print("Invalid program available options are {}".format(", ".join(cmds.COMMANDS.keys())))
-        sys.exit()
+    dd = fl.load(fd)
+    barcodes = dd['barcodes']
+    if type(barcodes[0]) == bytes:
+        barcodes = NP.array([x.decode('utf-8') for x in barcodes])
+    snvs = dd['ann']
+    strand_ref = dd['strand_ref_mat']
+    strand_alt = dd['strand_alt_mat']
 
-    cmds.COMMANDS[cmd](args)
+
+    print("Writing ref matrix")
+    mmwrite(os.path.join(gt_dir, f'refs.mtx'), strand_ref)
+
+    print("Writing alt matrix")
+    mmwrite(os.path.join(gt_dir, f'alts.mtx'), strand_alt)
+
+    print("Writing barcodes")
+    fout = open(f'{gt_dir}/barcodes.txt', 'w')
+    for b in barcodes:
+        fout.write(b + "\n")
+    fout.close()
+
+    print('Writing the SNV data')
+    snvs.to_csv(f'{gt_dir}/snvs.csv')

@@ -20,19 +20,18 @@
 
 from setuptools import setup
 from Cython.Build import cythonize
-import numpy, os, glob
-from os.path import join
+import numpy, os
 from setuptools.extension import Extension
 include_dirs = [numpy.get_include()]
 
 extensions = [
-    Extension("scsnvpy.data", ["scsnvpy/data.pyx"],
+    Extension("scsnvpy.data", ["src/scsnvpy/data.pyx"],
         include_dirs = include_dirs,
     ),
-    Extension("scsnvpy.gmix", ["scsnvpy/gmix.pyx"],
+    Extension("scsnvpy.gmix", ["src/scsnvpy/gmix.pyx"],
         include_dirs = include_dirs,
     ),
-    Extension("scsnvpy.snvmats", ["scsnvpy/snvmats.pyx"],
+    Extension("scsnvpy.snvmats", ["src/scsnvpy/snvmats.pyx"],
         include_dirs = include_dirs,
         language="c++",
         libraries=['pthread'],
@@ -41,17 +40,9 @@ extensions = [
     ),
 ]
 
-pxd_dirs=['scsnvpy/']
+pxd_dirs=['src/scsnvpy/']
 setup(name='scsnvpy',
-      version='1.0',
-      description='scSNV Python Library and Scripts',
-      author='Gavin Wilson',
-      url='https://github.com/GWW/scsnv',
-      author_email='gavin.w.wilson@gmail.com',
-      license='MIT',
       packages=['scsnvpy'],
-      install_requires=['matplotlib','numpy','scipy', 'cython', 'h5py', 'flammkuchen', 'NCLS', 'tables', 'cyvcf2', 'pandas', 'statsmodels', 'anndata'],
-      scripts=['bin/scsnvmisc', 'bin/scsnv2mtx'],
       ext_modules=cythonize(extensions, include_path=pxd_dirs),
 )
 
