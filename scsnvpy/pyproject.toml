@@ -2,7 +2,7 @@
 
 [build-system]
 requires        = ['matplotlib','numpy','scipy', 'cython', 'h5py', 'flammkuchen', 'NCLS', 
-                    'tables', 'cyvcf2', 'pandas', 'statsmodels', 'anndata']
+                    'tables', 'cyvcf2', 'pandas', 'statsmodels', 'anndata', 'setuptools','wheel']
 
 build-backend   = 'setuptools.build_meta'   
 
