@@ -1,0 +1,20 @@
+# pyproject.toml
+
+[build-system]
+requires        = ['matplotlib','numpy','scipy', 'cython', 'h5py', 'flammkuchen', 'NCLS', 
+                    'tables', 'cyvcf2', 'pandas', 'statsmodels', 'anndata']
+
+build-backend   = 'setuptools.build_meta'   
+
+[project]
+name            = 'scsnv'
+description = "scsnv"
+version     = "1.0"
+requires-python = ">=3.8"
+
+[project.urls]
+"Homepage" = "https://github.com/GWW/scsnv"
+
+[project.scripts]
+sctxmisc = "scsnv.scsnvmisc:go"
+scsnv2mtx = "scsnv.scsnv2mtx:go"
