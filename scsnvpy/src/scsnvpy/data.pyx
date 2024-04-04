@@ -41,6 +41,8 @@ def load_barcode_rates(fname, full = False):
         for k in brates['field_order']:
             if type(k) == bytes:
                 k = k.decode('utf-8')
+            if k not in brates:
+                continue
             data[k] = NP.array(brates[k])
         df = pd.DataFrame(data)
         if type(df['barcode'].values[0]) == bytes:

@@ -264,8 +264,9 @@ def cells_cmd(cargs):
 
     ax = axs[5]
     min_umi = args.min_umis
-    passed = prates[prates.passed]['molecules'] >= min_umi
-    prates['passed'] &= prates['molecules'] >= min_umi
+
+    #passed = prates[prates.passed]['molecules'] >= min_umi
+    prates['passed'] = prates['passed'] & (prates['molecules'] >= min_umi)
     krates['passed'] = False
     krates['used'] = False
     krates.iloc[prates.index, krates.columns.get_loc('used')] = True
@@ -273,7 +274,8 @@ def cells_cmd(cargs):
     ax.plot(bidx, mols, lw=0.5, color='k')
     ax.scatter(bidx[~krates['passed'].values], krates[~krates['passed']].molecules, s=10, color=colors[0], label='Low Quality', alpha=0.5, lw=0)
     idx = krates['used'] & krates['passed']
-    ax.set_title(f'Min UMI Cutoff\nTotal passed = {passed.sum():,} / {len(passed)}')
+    ptot = prates['passed'].sum()
+    ax.set_title(f'Min UMI Cutoff\nTotal passed = {ptot} / {len(prates)}')
     ax.scatter(bidx[idx], krates[idx].molecules, s=10, color=colors[2], label='Passed', alpha=0.5, lw=0)
     ax.set_ylabel('Total Molecules', fontsize=10)
     ax.set_xlabel('Cumulative barcodes', fontsize=10)
