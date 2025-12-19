@@ -85,8 +85,15 @@ scsnv collapse -l V2 -r genome_fasta -i index_prefix -o sample/ --threads 4 --ba
 #If a group file wasn't specified you can add the --skip-mt flag to skip MT DNA(%) calculations
 #There are additional options to control how cells are filtered that can be used see scsnvmisc cells -h
 #Alternatively, you can create a passed_barcodes.txt.gz file with a single field called "barcode" and one cell barcode per line
+#I DO NOT RECOMMEND USING THIS CELLS COMMAND I RECOMMEND MAKING YOUR OWN passed_barcodes.txt.gz file. One column with a header "barcode"
+#make sure each entry is 16bp long ie the -1 is stripped off and don't include the hash symbols
+#barcode
+#ACGTACGTACGTACGT
+#ACGTACGTACGTACTT
+#...
+#TTTTTTTTTTTTTTTT
 
-scsnvmisc cells -o sample sample/summary.h5
+##scsnvmisc cells -o sample sample/summary.h5
 
 #Pileup the reads from the collapsed molecules using a list of passed barcodes
 scsnv pileup -l V2 -i index_prefix -r genome_fasta -o sample/pileup -p ./sample/passed_barcodes.txt.gz -t 4 -x 4 ./sample/collapsed.bam
